@@ -17,7 +17,7 @@ public class Programa {
     private Integer id;
 
     @NotNull(message = "La escuela no puede ser nula")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "escuela_id", nullable = false)
     private Escuela escuela;
 

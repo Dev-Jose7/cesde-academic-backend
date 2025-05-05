@@ -19,7 +19,7 @@ public class Modulo {
     private Integer id;
 
     @NotNull(message = "El programa no puede ser nulo")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "programa_id", nullable = false)
     private Programa programa;
 
