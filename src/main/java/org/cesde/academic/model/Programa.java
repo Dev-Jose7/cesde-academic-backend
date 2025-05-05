@@ -11,12 +11,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "programa")
 public class Programa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull(message = "La escuela no puede ser nula")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "escuela_id", nullable = false)
     private Escuela escuela;
 
@@ -26,10 +27,14 @@ public class Programa {
     private String nombre;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
+
+    // Getters y Setters
 
     public Integer getId() {
         return id;
@@ -39,19 +44,19 @@ public class Programa {
         this.id = id;
     }
 
-    public @NotNull(message = "La escuela no puede ser nula") Escuela getEscuela() {
+    public Escuela getEscuela() {
         return escuela;
     }
 
-    public void setEscuela(@NotNull(message = "La escuela no puede ser nula") Escuela escuela) {
+    public void setEscuela(Escuela escuela) {
         this.escuela = escuela;
     }
 
-    public @NotNull(message = "El nombre del programa no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre del programa debe tener entre 1 y 255 caracteres") String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotNull(message = "El nombre del programa no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre del programa debe tener entre 1 y 255 caracteres") String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
@@ -75,7 +80,7 @@ public class Programa {
     public String toString() {
         return "Programa{" +
                 "id=" + id +
-                ", escuela=" + escuela +
+                ", escuela=" + (escuela != null ? escuela.getId() : null) +
                 ", nombre='" + nombre + '\'' +
                 ", creado=" + creado +
                 ", actualizado=" + actualizado +

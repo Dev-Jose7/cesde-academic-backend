@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "modulo")
 public class Modulo {
+
     public enum Tipo { MATERIA, CURSO, CATEDRA, SEMINARIO }
 
     @Id
@@ -18,7 +19,7 @@ public class Modulo {
     private Integer id;
 
     @NotNull(message = "El programa no puede ser nulo")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programa_id", nullable = false)
     private Programa programa;
 
@@ -33,10 +34,14 @@ public class Modulo {
     private Tipo tipo;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
+
+    // Getters y Setters
 
     public Integer getId() {
         return id;
@@ -46,27 +51,27 @@ public class Modulo {
         this.id = id;
     }
 
-    public @NotNull(message = "El programa no puede ser nulo") Programa getPrograma() {
+    public Programa getPrograma() {
         return programa;
     }
 
-    public void setPrograma(@NotNull(message = "El programa no puede ser nulo") Programa programa) {
+    public void setPrograma(Programa programa) {
         this.programa = programa;
     }
 
-    public @NotNull(message = "El nombre del módulo no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre del módulo debe tener entre 1 y 255 caracteres") String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotNull(message = "El nombre del módulo no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre del módulo debe tener entre 1 y 255 caracteres") String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public @NotNull(message = "El tipo de módulo no puede ser nulo") Tipo getTipo() {
+    public Tipo getTipo() {
         return tipo;
     }
 
-    public void setTipo(@NotNull(message = "El tipo de módulo no puede ser nulo") Tipo tipo) {
+    public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
 
@@ -90,7 +95,7 @@ public class Modulo {
     public String toString() {
         return "Modulo{" +
                 "id=" + id +
-                ", programa=" + programa +
+                ", programa=" + (programa != null ? programa.getId() : null) +
                 ", nombre='" + nombre + '\'' +
                 ", tipo=" + tipo +
                 ", creado=" + creado +

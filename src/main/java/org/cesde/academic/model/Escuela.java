@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "escuela")
 public class Escuela {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -21,9 +22,11 @@ public class Escuela {
     private String nombre;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
 
     public Integer getId() {
@@ -34,11 +37,11 @@ public class Escuela {
         this.id = id;
     }
 
-    public @NotNull(message = "El nombre de la escuela no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre de la escuela debe tener entre 1 y 255 caracteres") String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotNull(message = "El nombre de la escuela no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre de la escuela debe tener entre 1 y 255 caracteres") String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
@@ -68,4 +71,3 @@ public class Escuela {
                 '}';
     }
 }
-
