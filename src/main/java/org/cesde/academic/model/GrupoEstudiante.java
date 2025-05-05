@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "grupo_estudiante")
 @IdClass(GrupoEstudianteId.class)
 public class GrupoEstudiante {
+
     @Id
     @NotNull(message = "El grupo no puede ser nulo")
     @ManyToOne
@@ -24,24 +25,26 @@ public class GrupoEstudiante {
     private Usuario estudiante;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
 
-    public @NotNull(message = "El grupo no puede ser nulo") Grupo getGrupo() {
+    public Grupo getGrupo() {
         return grupo;
     }
 
-    public void setGrupo(@NotNull(message = "El grupo no puede ser nulo") Grupo grupo) {
+    public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
     }
 
-    public @NotNull(message = "El estudiante no puede ser nulo") Usuario getEstudiante() {
+    public Usuario getEstudiante() {
         return estudiante;
     }
 
-    public void setEstudiante(@NotNull(message = "El estudiante no puede ser nulo") Usuario estudiante) {
+    public void setEstudiante(Usuario estudiante) {
         this.estudiante = estudiante;
     }
 

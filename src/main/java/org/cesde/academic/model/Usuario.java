@@ -33,7 +33,7 @@ public class Usuario {
     @NotNull(message = "La contraseña no puede ser nula")
     @Size(min = 6, max = 255, message = "La contraseña debe tener al menos 6 caracteres y máximo 255")
     @Column(nullable = false, length = 255)
-    private String contraseña;
+    private String contrasena; // Renombrado de "contraseña" a "contrasena" (opcional)
 
     @NotNull(message = "El tipo de usuario no puede ser nulo")
     @Enumerated(EnumType.STRING)
@@ -51,6 +51,8 @@ public class Usuario {
     @UpdateTimestamp
     private LocalDateTime actualizado;
 
+    // Getters y Setters
+
     public Integer getId() {
         return id;
     }
@@ -59,43 +61,43 @@ public class Usuario {
         this.id = id;
     }
 
-    public @NotNull(message = "El nombre no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres") String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotNull(message = "El nombre no puede ser nulo") @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres") String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public @NotNull(message = "El correo no puede ser nulo") @Email(message = "El correo debe ser válido") @Size(max = 255, message = "El correo no puede exceder los 255 caracteres") String getCorreo() {
+    public String getCorreo() {
         return correo;
     }
 
-    public void setCorreo(@NotNull(message = "El correo no puede ser nulo") @Email(message = "El correo debe ser válido") @Size(max = 255, message = "El correo no puede exceder los 255 caracteres") String correo) {
+    public void setCorreo(String correo) {
         this.correo = correo;
     }
 
-    public @NotNull(message = "La contraseña no puede ser nula") @Size(min = 6, max = 255, message = "La contraseña debe tener al menos 6 caracteres y máximo 255") String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(@NotNull(message = "La contraseña no puede ser nula") @Size(min = 6, max = 255, message = "La contraseña debe tener al menos 6 caracteres y máximo 255") String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
-    public @NotNull(message = "El tipo de usuario no puede ser nulo") Tipo getTipo() {
+    public Tipo getTipo() {
         return tipo;
     }
 
-    public void setTipo(@NotNull(message = "El tipo de usuario no puede ser nulo") Tipo tipo) {
+    public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
 
-    public @NotNull(message = "El estado no puede ser nulo") Estado getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(@NotNull(message = "El estado no puede ser nulo") Estado estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
@@ -121,7 +123,7 @@ public class Usuario {
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", correo='" + correo + '\'' +
-                ", contraseña='" + contraseña + '\'' +
+                ", contrasena='" + contrasena + '\'' +
                 ", tipo=" + tipo +
                 ", estado=" + estado +
                 ", creado=" + creado +

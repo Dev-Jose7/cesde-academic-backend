@@ -32,9 +32,11 @@ public class Grupo {
     private Estado estado;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
 
     public Integer getId() {
@@ -45,27 +47,27 @@ public class Grupo {
         this.id = id;
     }
 
-    public @NotNull(message = "El programa no puede ser nulo") Programa getPrograma() {
+    public Programa getPrograma() {
         return programa;
     }
 
-    public void setPrograma(@NotNull(message = "El programa no puede ser nulo") Programa programa) {
+    public void setPrograma(Programa programa) {
         this.programa = programa;
     }
 
-    public @NotNull(message = "El semestre no puede ser nulo") Semestre getSemestre() {
+    public Semestre getSemestre() {
         return semestre;
     }
 
-    public void setSemestre(@NotNull(message = "El semestre no puede ser nulo") Semestre semestre) {
+    public void setSemestre(Semestre semestre) {
         this.semestre = semestre;
     }
 
-    public @NotNull(message = "El estado del grupo no puede ser nulo") Estado getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(@NotNull(message = "El estado del grupo no puede ser nulo") Estado estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
