@@ -46,12 +46,12 @@ public class Usuario {
     private Estado estado;
 
     @CreationTimestamp
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
-
-    // Getters y Setters
 
     public Integer getId() {
         return id;
