@@ -6,23 +6,23 @@ import java.util.Objects;
 // Composite key class for GrupoEstudiante
 public class GrupoEstudianteId implements Serializable {
 
-    private Integer grupoId;  // Refleja el nombre de la columna en la base de datos (grupo_id)
-    private Integer estudianteId;  // Refleja el nombre de la columna en la base de datos (estudiante_id)
+    private Integer grupo;  // Refleja el nombre de la columna en la base de datos (grupo_id)
+    private Integer estudiante;  // Refleja el nombre de la columna en la base de datos (estudiante_id)
 
-    public Integer getGrupoId() {
-        return grupoId;
+    public Integer getGrupo() {
+        return grupo;
     }
 
-    public void setGrupoId(Integer grupoId) {
-        this.grupoId = grupoId;
+    public void setGrupo(Integer grupo) {
+        this.grupo = grupo;
     }
 
-    public Integer getEstudianteId() {
-        return estudianteId;
+    public Integer getEstudiante() {
+        return estudiante;
     }
 
-    public void setEstudianteId(Integer estudianteId) {
-        this.estudianteId = estudianteId;
+    public void setEstudiante(Integer estudiante) {
+        this.estudiante = estudiante;
     }
 
     @Override
@@ -30,11 +30,11 @@ public class GrupoEstudianteId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GrupoEstudianteId that = (GrupoEstudianteId) o;
-        return Objects.equals(grupoId, that.grupoId) && Objects.equals(estudianteId, that.estudianteId);
+        return Objects.equals(grupo, that.grupo) && Objects.equals(estudiante, that.estudiante);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(grupoId, estudianteId);
+        return Objects.hash(grupo, estudiante);
     }
 }
