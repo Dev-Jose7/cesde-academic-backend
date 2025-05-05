@@ -4,6 +4,10 @@ import org.cesde.academic.model.ClaseHorario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClaseHorarioRepository extends JpaRepository<ClaseHorario, Integer> {
+    List<ClaseHorario> findByClase_Id(Integer claseId);
+    List<ClaseHorario> findByHorario_Id(Integer horarioId);
 }
