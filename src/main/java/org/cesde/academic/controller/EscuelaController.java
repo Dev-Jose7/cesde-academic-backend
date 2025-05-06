@@ -20,8 +20,14 @@ public class EscuelaController {
 
     @PostMapping("/crear")
     public ResponseEntity<Escuela> createEscuela(@Valid @RequestBody Escuela escuela){
-        Escuela newEscuela = escuelaService.createEscuela(escuela);
-        return new ResponseEntity<>(newEscuela, HttpStatus.CREATED);
+        Optional<Escuela> escuelaOptional = escuelaService.getEscuelaByNombre(escuela.getNombre());
+
+        if(escuelaOptional.isEmpty()){
+            Escuela newEscuela = escuelaService.createEscuela(escuela);
+            return new ResponseEntity<>(newEscuela, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
     @GetMapping("/lista")
@@ -45,11 +51,18 @@ public class EscuelaController {
 
     @PutMapping("/editar/{id}")
     public ResponseEntity<Escuela> updateEscuela(@PathVariable Integer id, @Valid @RequestBody Escuela updatedEscuela){
-        Optional<Escuela> optionalEscuela = escuelaService.getEscuelaById(id);
+        Optional<Escuela> escuelaById = escuelaService.getEscuelaById(id);
+        Optional<Escuela> escuelaByName = escuelaService.getEscuelaByNombre(updatedEscuela.getNombre());
 
-        return optionalEscuela
-                .map(escuela -> new ResponseEntity<>(escuelaService.updateEscuela(escuela, updatedEscuela), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(escuelaById.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (escuelaByName.isPresent() && escuelaById.get().getId() != id) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(escuelaService.updateEscuela(escuelaById.get(), updatedEscuela), HttpStatus.OK);
     }
 
     @DeleteMapping("/remover/{id}")

@@ -21,8 +21,14 @@ public class ProgramaController {
     // Endpoint para crear un nuevo programa
     @PostMapping("/crear")
     public ResponseEntity<Programa> createPrograma(@Valid @RequestBody Programa programa){
-        Programa newPrograma = programaService.createPrograma(programa);
-        return new ResponseEntity<>(newPrograma, HttpStatus.CREATED);
+        Optional<Programa> programaOptional = programaService.getProgramaByNombre(programa.getNombre());
+
+        if(programaOptional.isEmpty()){
+            Programa newPrograma = programaService.createPrograma(programa);
+            return new ResponseEntity<>(newPrograma, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
     // Endpoint para obtener la lista de programas
@@ -49,11 +55,18 @@ public class ProgramaController {
     // Endpoint para actualizar un programa
     @PutMapping("/editar/{id}")
     public ResponseEntity<Programa> updatePrograma(@PathVariable Integer id, @Valid @RequestBody Programa updatedPrograma){
-        Optional<Programa> optionalPrograma = programaService.getProgramaById(id);
+        Optional<Programa> programaById = programaService.getProgramaById(id);
+        Optional<Programa> programaByNombre = programaService.getProgramaByNombre(updatedPrograma.getNombre());
 
-        return optionalPrograma
-                .map(programa -> new ResponseEntity<>(programaService.updatePrograma(programa, updatedPrograma), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(programaById.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if(programaByNombre.isPresent() && programaByNombre.get().getId() != id){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(programaService.updatePrograma(programaById.get(), updatedPrograma), HttpStatus.OK);
     }
 
     // Endpoint para eliminar un programa
