@@ -18,7 +18,7 @@ public class Semestre {
 
     @NotNull(message = "El nombre del semestre no puede ser nulo")
     @Size(min = 1, max = 50, message = "El nombre del semestre debe tener entre 1 y 50 caracteres")
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String nombre;
 
     @CreationTimestamp

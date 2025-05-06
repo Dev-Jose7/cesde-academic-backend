@@ -18,7 +18,7 @@ public class Escuela {
 
     @NotNull(message = "El nombre de la escuela no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre de la escuela debe tener entre 1 y 255 caracteres")
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, unique = true)
     private String nombre;
 
     @CreationTimestamp
