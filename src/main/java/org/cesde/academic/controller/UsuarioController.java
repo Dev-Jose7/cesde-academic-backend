@@ -21,8 +21,15 @@ public class UsuarioController {
     // Endpoint para crear un nuevo usuario
     @PostMapping("/crear")
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody Usuario usuario){
-        Usuario newUsuario = usuarioService.createUsuario(usuario);
-        return new ResponseEntity<>(newUsuario, HttpStatus.CREATED);
+        Optional<Usuario> usuarioOptional = usuarioService.getUsuarioByCorreo(usuario.getCorreo());
+
+        if(usuarioOptional.isEmpty()){
+            Usuario newUsuario = usuarioService.createUsuario(usuario);
+            return new ResponseEntity<>(newUsuario, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
     }
 
     // Endpoint para obtener la lista de usuarios
@@ -47,17 +54,24 @@ public class UsuarioController {
     }
 
     // Endpoint para actualizar un usuario
-    @PutMapping("/edit/{id}")
+    @PutMapping("/editar/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @Valid @RequestBody Usuario updatedUsuario){
-        Optional<Usuario> optionalUsuario = usuarioService.getUsuarioById(id);
+        Optional<Usuario> usuarioById = usuarioService.getUsuarioById(id);
+        Optional<Usuario> usuarioByCorreo = usuarioService.getUsuarioByCorreo(updatedUsuario.getCorreo());
 
-        return optionalUsuario
-                .map(usuario -> new ResponseEntity<>(usuarioService.updateUsuario(usuario, updatedUsuario), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(usuarioById.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (usuarioByCorreo.isPresent() && usuarioById.get().getId() != id) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(usuarioService.updateUsuario(usuarioById.get(), updatedUsuario), HttpStatus.OK);
     }
 
     // Endpoint para eliminar un usuario
-    @DeleteMapping("/remove/{id}")
+    @DeleteMapping("/remover/{id}")
     public ResponseEntity<Usuario> deleteUsuario(@PathVariable Integer id){
         Optional<Usuario> optionalUsuario = usuarioService.getUsuarioById(id);
 

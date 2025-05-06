@@ -21,8 +21,14 @@ public class ModuloController {
     // Endpoint para crear un nuevo módulo
     @PostMapping("/crear")
     public ResponseEntity<Modulo> createModulo(@Valid @RequestBody Modulo modulo){
-        Modulo newModulo = moduloService.createModulo(modulo);
-        return new ResponseEntity<>(newModulo, HttpStatus.CREATED);
+        Optional<Modulo> moduloOptional = moduloService.getModuloByNombre(modulo.getNombre());
+
+        if(moduloOptional.isEmpty()){
+            Modulo newModulo = moduloService.createModulo(modulo);
+            return new ResponseEntity<>(newModulo, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
     // Endpoint para obtener la lista de módulos
@@ -49,11 +55,18 @@ public class ModuloController {
     // Endpoint para actualizar un módulo
     @PutMapping("/editar/{id}")
     public ResponseEntity<Modulo> updateModulo(@PathVariable Integer id, @Valid @RequestBody Modulo updatedModulo){
-        Optional<Modulo> optionalModulo = moduloService.getModuloById(id);
+        Optional<Modulo> moduloById = moduloService.getModuloById(id);
+        Optional<Modulo> moduloByNombre = moduloService.getModuloByNombre(updatedModulo.getNombre());
 
-        return optionalModulo
-                .map(modulo -> new ResponseEntity<>(moduloService.updateModulo(modulo, updatedModulo), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(moduloById.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if(moduloByNombre.isPresent() && moduloById.get().getId() != id){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(moduloService.updateModulo(moduloById.get(), updatedModulo), HttpStatus.OK);
     }
 
     // Endpoint para eliminar un módulo
