@@ -35,11 +35,11 @@ public class Usuario {
     @Column(name = "contraseña", nullable = false)
     private String contrasena; // Renombrado de "contraseña" a "contrasena" (opcional)
 
+    @NotNull(message = "El estado no puede ser nulo")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private Tipo tipo;
 
-    @NotNull(message = "El estado no puede ser nulo")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private Estado estado;
