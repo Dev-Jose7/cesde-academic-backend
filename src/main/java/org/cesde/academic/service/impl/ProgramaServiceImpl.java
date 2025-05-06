@@ -31,6 +31,11 @@ public class ProgramaServiceImpl implements IProgramaService {
     }
 
     @Override
+    public Optional<Programa> getProgramaByNombre(String nombre) {
+        return programaRepository.findByNombre(nombre);
+    }
+
+    @Override
     public List<Programa> getProgramasByEscuelaId(Integer escuelaId) {
         return programaRepository.findByEscuela_Id(escuelaId);
     }
