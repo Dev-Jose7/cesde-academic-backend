@@ -10,6 +10,7 @@ public interface IProgramaService {
     Programa createPrograma(Programa programa);
     List<Programa> getProgramas();
     Optional<Programa> getProgramaById(Integer id);
+    Optional<Programa> getProgramaByNombre(String nombre);
     List<Programa> getProgramasByEscuelaId(Integer escuelaId);
     Programa updatePrograma(Programa programa, Programa programaUpdated);
     void deletePrograma(Programa programa);

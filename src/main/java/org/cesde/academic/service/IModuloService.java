@@ -10,6 +10,7 @@ public interface IModuloService {
     Modulo createModulo(Modulo modulo);
     List<Modulo> getModulos();
     Optional<Modulo> getModuloById(Integer id);
+    Optional<Modulo> getModuloByNombre(String nombre);
     List<Modulo> getModulosByProgramaId(Integer programaId);
     Modulo updateModulo(Modulo modulo, Modulo moduloUpdated);
     void deleteModulo(Modulo modulo);

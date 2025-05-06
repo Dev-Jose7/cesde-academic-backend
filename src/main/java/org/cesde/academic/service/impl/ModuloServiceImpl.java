@@ -31,6 +31,11 @@ public class ModuloServiceImpl implements IModuloService {
     }
 
     @Override
+    public Optional<Modulo> getModuloByNombre(String nombre) {
+        return moduloRepository.findByNombre(nombre);
+    }
+
+    @Override
     public List<Modulo> getModulosByProgramaId(Integer programaId) {
         return moduloRepository.findByPrograma_Id(programaId);
     }

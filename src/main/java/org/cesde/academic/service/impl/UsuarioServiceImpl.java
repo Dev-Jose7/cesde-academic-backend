@@ -31,6 +31,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    public Optional<Usuario> getUsuarioByCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo);
+    }
+
+    @Override
     public Usuario updateUsuario(Usuario usuario, Usuario usuarioUpdated) {
         usuarioUpdated.setId(usuario.getId());
         return usuarioRepository.save(usuarioUpdated);

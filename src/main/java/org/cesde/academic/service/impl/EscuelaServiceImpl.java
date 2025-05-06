@@ -31,6 +31,11 @@ public class EscuelaServiceImpl implements IEscuelaService {
     }
 
     @Override
+    public Optional<Escuela> getEscuelaByNombre(String nombre) {
+        return escuelaRepository.findByNombre(nombre);
+    }
+
+    @Override
     public Escuela updateEscuela(Escuela escuela, Escuela escuelaUpdated) {
         escuelaUpdated.setId(escuela.getId());
         return escuelaRepository.save(escuelaUpdated);
