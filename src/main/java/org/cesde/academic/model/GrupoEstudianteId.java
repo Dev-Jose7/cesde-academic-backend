@@ -9,6 +9,13 @@ public class GrupoEstudianteId implements Serializable {
     private Integer grupo;  // Refleja el nombre de la columna en la base de datos (grupo_id)
     private Integer estudiante;  // Refleja el nombre de la columna en la base de datos (estudiante_id)
 
+    public GrupoEstudianteId() {}
+
+    public GrupoEstudianteId(Integer grupo, Integer estudiante) {
+        this.grupo = grupo;
+        this.estudiante = estudiante;
+    }
+
     public Integer getGrupo() {
         return grupo;
     }

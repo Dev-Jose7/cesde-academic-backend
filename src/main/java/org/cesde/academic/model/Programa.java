@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +24,7 @@ public class Programa {
 
     @NotNull(message = "El nombre del programa no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre del programa debe tener entre 1 y 255 caracteres")
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, unique = true)
     private String nombre;
 
     @CreationTimestamp
