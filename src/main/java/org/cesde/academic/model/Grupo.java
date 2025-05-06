@@ -26,7 +26,6 @@ public class Grupo {
     @JoinColumn(name = "semestre_id", nullable = false)
     private Semestre semestre;
 
-    @NotNull(message = "El estado del grupo no puede ser nulo")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private Estado estado;
