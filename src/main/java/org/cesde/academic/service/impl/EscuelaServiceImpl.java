@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
 
-public class EstudianteServiceImpl implements IEscuelaService {
+public class EscuelaServiceImpl implements IEscuelaService {
 
     @Autowired
     EscuelaRepository escuelaRepository;
