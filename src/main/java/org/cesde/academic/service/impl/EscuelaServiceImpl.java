@@ -4,10 +4,12 @@ import org.cesde.academic.model.Escuela;
 import org.cesde.academic.repository.EscuelaRepository;
 import org.cesde.academic.service.IEscuelaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class EscuelaServiceImpl implements IEscuelaService {
 
     @Autowired
