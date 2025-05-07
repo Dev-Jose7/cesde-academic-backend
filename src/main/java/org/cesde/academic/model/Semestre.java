@@ -1,5 +1,7 @@
 package org.cesde.academic.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,10 +25,14 @@ public class Semestre {
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará valor de una clave para esta propiedad que venga en el JSON.
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private LocalDateTime creado;
 
     @UpdateTimestamp
     @Column(name = "actualizado", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará valor de una clave para esta propiedad que venga en el JSON.
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private LocalDateTime actualizado;
 
     public Integer getId() {
