@@ -1,5 +1,7 @@
 package org.cesde.academic.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +19,8 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará clave id que venga en el JSON.
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private Integer id;
 
     @NotNull(message = "El nombre no puede ser nulo")
@@ -46,11 +50,15 @@ public class Usuario {
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
-    private LocalDateTime creado;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará valor de una clave para esta propiedad que venga en el JSON.
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
+    private LocalDateTime creado; // Hibernate/JPA: seguirá asignando automáticamente el valor en cada creación.
 
     @UpdateTimestamp
     @Column(name = "actualizado", nullable = false)
-    private LocalDateTime actualizado;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará valor de una clave para esta propiedad que venga en el JSON.
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
+    private LocalDateTime actualizado; // Hibernate/JPA: seguirá asignando automáticamente el valor en cada actualización.
 
     public Integer getId() {
         return id;

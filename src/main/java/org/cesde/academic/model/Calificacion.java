@@ -1,5 +1,7 @@
 package org.cesde.academic.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -16,6 +18,8 @@ public class Calificacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
     // Relación con la entidad Actividad
@@ -39,10 +43,14 @@ public class Calificacion {
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime creado;
 
     @UpdateTimestamp
     @Column(name = "actualizado", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime actualizado;
 
     public Integer getId() {
