@@ -17,7 +17,6 @@ public class Programa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY) //Jackson: ignorará clave para esta propiedad que venga en el JSON.
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private Integer id;
 
