@@ -1,7 +1,10 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Actividad;
+import org.cesde.academic.model.Clase;
 import org.cesde.academic.repository.ActividadRepository;
+import org.cesde.academic.repository.ClaseRepository;
 import org.cesde.academic.service.IActividadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +18,15 @@ public class ActividadServiceImpl implements IActividadService {
     @Autowired
     private ActividadRepository actividadRepository;
 
+    @Autowired
+    private ClaseRepository claseRepository;
+
     @Override
     public Actividad createActividad(Actividad actividad) {
+        Clase clase = claseRepository.findById(actividad.getClase().getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
+
+        actividad.setClase(clase);
         return actividadRepository.save(actividad);
     }
 
@@ -37,7 +47,11 @@ public class ActividadServiceImpl implements IActividadService {
 
     @Override
     public Actividad updateActividad(Actividad actividad, Actividad actividadUpdated) {
+        Clase clase = claseRepository.findById(actividadUpdated.getClase().getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
+
         actividadUpdated.setId(actividad.getId());
+        actividadUpdated.setClase(clase);
         return actividadRepository.save(actividadUpdated);
     }
 
