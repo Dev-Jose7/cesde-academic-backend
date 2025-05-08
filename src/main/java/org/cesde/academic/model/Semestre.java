@@ -16,6 +16,7 @@ public class Semestre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
     @NotNull(message = "El nombre del semestre no puede ser nulo")
