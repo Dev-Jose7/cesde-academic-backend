@@ -1,7 +1,10 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Modulo;
+import org.cesde.academic.model.Programa;
 import org.cesde.academic.repository.ModuloRepository;
+import org.cesde.academic.repository.ProgramaRepository;
 import org.cesde.academic.service.IModuloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +18,15 @@ public class ModuloServiceImpl implements IModuloService {
     @Autowired
     private ModuloRepository moduloRepository;
 
+    @Autowired
+    private ProgramaRepository programaRepository;
+
     @Override
     public Modulo createModulo(Modulo modulo) {
+        Programa programa = programaRepository.findById(modulo.getPrograma().getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
+
+        modulo.setPrograma(programa);
         return moduloRepository.save(modulo);
     }
 
@@ -42,7 +52,11 @@ public class ModuloServiceImpl implements IModuloService {
 
     @Override
     public Modulo updateModulo(Modulo modulo, Modulo moduloUpdated) {
+        Programa programa = programaRepository.findById(moduloUpdated.getPrograma().getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
+
         moduloUpdated.setId(modulo.getId());
+        moduloUpdated.setPrograma(programa);
         return moduloRepository.save(moduloUpdated);
     }
 
