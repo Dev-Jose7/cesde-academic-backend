@@ -32,7 +32,7 @@ public class Modulo {
     private String nombre;
 
     @NotNull(message = "El tipo de módulo no puede ser nulo")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // Guarda el nombre del valor del enum como una cadena de texto en la base de datos.
     @Column(nullable = false, length = 50)
     private Tipo tipo;
 
