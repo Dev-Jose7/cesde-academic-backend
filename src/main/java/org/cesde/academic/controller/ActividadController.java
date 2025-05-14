@@ -1,7 +1,9 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.Actividad;
+import org.cesde.academic.dto.request.ActividadRequestDTO;
+import org.cesde.academic.dto.response.ActividadResponseDTO;
+import org.cesde.academic.enums.TipoActividad;
 import org.cesde.academic.service.IActividadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/actividad")
@@ -18,67 +19,59 @@ public class ActividadController {
     @Autowired
     private IActividadService actividadService;
 
-    // Endpoint para crear una nueva actividad
     @PostMapping("/crear")
-    public ResponseEntity<Actividad> createActividad(@Valid @RequestBody Actividad actividad) {
-        Actividad newActividad = actividadService.createActividad(actividad);
-        return new ResponseEntity<>(newActividad, HttpStatus.CREATED);
+    public ResponseEntity<ActividadResponseDTO> createActividad(@Valid @RequestBody ActividadRequestDTO request) {
+        ActividadResponseDTO actividad = actividadService.createActividad(request);
+        return new ResponseEntity<>(actividad, HttpStatus.CREATED);
     }
 
-    // Endpoint para obtener todas las actividades
     @GetMapping("/lista")
-    public ResponseEntity<List<Actividad>> getListaActividades() {
-        List<Actividad> actividadList = actividadService.getActividades();
-
-        if (actividadList.isEmpty()) {
-            return new ResponseEntity<>(actividadList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(actividadList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<ActividadResponseDTO>> getActividades() {
+        List<ActividadResponseDTO> actividades = actividadService.getActividades();
+        return actividades.isEmpty()
+                ? new ResponseEntity<>(actividades, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(actividades, HttpStatus.OK);
     }
 
-    // Endpoint para obtener una actividad por su ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getActividadById(@PathVariable Integer id) {
-        Optional<Actividad> optionalActividad = actividadService.getActividadById(id);
-
-        return optionalActividad
-                .map(actividad -> new ResponseEntity<>(actividad, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ActividadResponseDTO> getActividadById(@PathVariable Integer id) {
+        ActividadResponseDTO actividad = actividadService.getActividadById(id);
+        return new ResponseEntity<>(actividad, HttpStatus.OK);
     }
 
-    // Endpoint para obtener las actividades de una clase
-    @GetMapping("/clase/{claseId}")
-    public ResponseEntity<List<Actividad>> getActividadesByClaseId(@PathVariable Integer claseId) {
-        List<Actividad> actividadList = actividadService.getActividadesByClaseId(claseId);
-
-        if (actividadList.isEmpty()) {
-            return new ResponseEntity<>(actividadList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(actividadList, HttpStatus.OK);
-        }
+    @GetMapping("/clase/{id}")
+    public ResponseEntity<List<ActividadResponseDTO>> getActividadesByClase(@PathVariable Integer claseId) {
+        List<ActividadResponseDTO> actividades = actividadService.getActividadesByClase(claseId);
+        return actividades.isEmpty()
+                ? new ResponseEntity<>(actividades, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(actividades, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar una actividad
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<Actividad> updateActividad(@PathVariable Integer id, @Valid @RequestBody Actividad updatedActividad) {
-        Optional<Actividad> optionalActividad = actividadService.getActividadById(id);
-
-        return optionalActividad
-                .map(actividad -> new ResponseEntity<>(actividadService.updateActividad(actividad, updatedActividad), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/clase/buscar/titulo/{titulo}")
+    public ResponseEntity<List<ActividadResponseDTO>> getActividadesByTitulo(@PathVariable String titulo){
+        List<ActividadResponseDTO> actividades = actividadService.getActividadesByTitulo(titulo);
+        return actividades.isEmpty()
+                ? new ResponseEntity<>(actividades, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(actividades, HttpStatus.OK);
     }
 
-    // Endpoint para eliminar una actividad
-    @DeleteMapping("/remove/{id}")
-    public ResponseEntity<Actividad> deleteActividad(@PathVariable Integer id) {
-        Optional<Actividad> optionalActividad = actividadService.getActividadById(id);
+    @GetMapping("/clase/buscar/tipo/{tipo}")
+    public ResponseEntity<List<ActividadResponseDTO>> getActividadesByTipo(@PathVariable TipoActividad tipo){
+        List<ActividadResponseDTO> actividades = actividadService.getActividadesByTipo(tipo);
+        return actividades.isEmpty()
+                ? new ResponseEntity<>(actividades, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(actividades, HttpStatus.OK);
+    }
 
-        if (optionalActividad.isPresent()) {
-            actividadService.deleteActividad(optionalActividad.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<ActividadResponseDTO> updateActividad(@PathVariable Integer id, @Valid @RequestBody ActividadRequestDTO request) {
+        ActividadResponseDTO actividad = actividadService.updateActividad(id, request);
+        return new ResponseEntity<>(actividad, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/remover/{id}")
+    public ResponseEntity<Void> deleteActividad(@PathVariable Integer id) {
+        actividadService.deleteActividad(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

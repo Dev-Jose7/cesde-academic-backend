@@ -1,7 +1,8 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.Archivo;
+import org.cesde.academic.dto.request.ArchivoRequestDTO;
+import org.cesde.academic.dto.response.ArchivoResponseDTO;
 import org.cesde.academic.service.IArchivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/archivo")
@@ -18,79 +18,57 @@ public class ArchivoController {
     @Autowired
     private IArchivoService archivoService;
 
-    // Endpoint para crear un nuevo archivo
     @PostMapping("/crear")
-    public ResponseEntity<Archivo> createArchivo(@Valid @RequestBody Archivo archivo) {
-        Archivo newArchivo = archivoService.createArchivo(archivo);
-        return new ResponseEntity<>(newArchivo, HttpStatus.CREATED);
+    public ResponseEntity<ArchivoResponseDTO> createArchivo(@Valid @RequestBody ArchivoRequestDTO request) {
+        return new ResponseEntity<>(archivoService.createArchivo(request), HttpStatus.CREATED);
     }
 
-    // Endpoint para obtener todos los archivos
     @GetMapping("/lista")
-    public ResponseEntity<List<Archivo>> getListaArchivos() {
-        List<Archivo> archivoList = archivoService.getArchivos();
-
-        if (archivoList.isEmpty()) {
-            return new ResponseEntity<>(archivoList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(archivoList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<ArchivoResponseDTO>> getListaArchivos() {
+        List<ArchivoResponseDTO> archivos = archivoService.getArchivos();
+        return archivos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(archivos, HttpStatus.OK);
     }
 
-    // Endpoint para obtener un archivo por su ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getArchivoById(@PathVariable Integer id) {
-        Optional<Archivo> optionalArchivo = archivoService.getArchivoById(id);
-
-        return optionalArchivo
-                .map(archivo -> new ResponseEntity<>(archivo, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ArchivoResponseDTO> getArchivoById(@PathVariable Integer id) {
+        return new ResponseEntity<>(archivoService.getArchivoById(id), HttpStatus.OK);
     }
 
-    // Endpoint para obtener los archivos por ID de clase
-    @GetMapping("/clase/{id}")
-    public ResponseEntity<List<Archivo>> getArchivosByClaseId(@PathVariable Integer claseId) {
-        List<Archivo> archivoList = archivoService.getArchivosByClaseId(claseId);
-
-        if (archivoList.isEmpty()) {
-            return new ResponseEntity<>(archivoList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(archivoList, HttpStatus.OK);
-        }
-    }
-
-    // Endpoint para obtener los archivos por ID de usuario
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<List<Archivo>> getArchivosByUsuarioId(@PathVariable Integer usuarioId) {
-        List<Archivo> archivoList = archivoService.getArchivosByUsuarioId(usuarioId);
-
-        if (archivoList.isEmpty()) {
-            return new ResponseEntity<>(archivoList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(archivoList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<ArchivoResponseDTO>> getArchivosByUsuario(@PathVariable Integer usuarioId) {
+        List<ArchivoResponseDTO> archivos = archivoService.getArchivosByUsuarioId(usuarioId);
+        return archivos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(archivos, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar un archivo
+
+    @GetMapping("/buscar/nombre/{archivo}")
+    public ResponseEntity<List<ArchivoResponseDTO>> getArchivosByNombre(@PathVariable String nombreArchivo) {
+        List<ArchivoResponseDTO> archivos = archivoService.getArchivosByNombreArchivo(nombreArchivo);
+        return archivos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(archivos, HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar/ruta/{archivo}")
+    public ResponseEntity<List<ArchivoResponseDTO>> getArchivosByRuta(@PathVariable String rutaArchivo) {
+        List<ArchivoResponseDTO> archivos = archivoService.getArchivosByRutaArchivo(rutaArchivo);
+        return archivos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(archivos, HttpStatus.OK);
+    }
+
     @PutMapping("/editar/{id}")
-    public ResponseEntity<Archivo> updateArchivo(@PathVariable Integer id, @Valid @RequestBody Archivo updatedArchivo) {
-        Optional<Archivo> optionalArchivo = archivoService.getArchivoById(id);
-
-        return optionalArchivo
-                .map(archivo -> new ResponseEntity<>(archivoService.updateArchivo(archivo, updatedArchivo), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ArchivoResponseDTO> updateArchivo(@PathVariable Integer id, @Valid @RequestBody ArchivoRequestDTO request) {
+        return new ResponseEntity<>(archivoService.updateArchivo(id, request), HttpStatus.OK);
     }
 
-    // Endpoint para eliminar un archivo
     @DeleteMapping("/remover/{id}")
-    public ResponseEntity<Archivo> deleteArchivo(@PathVariable Integer id) {
-        Optional<Archivo> optionalArchivo = archivoService.getArchivoById(id);
-
-        if (optionalArchivo.isPresent()) {
-            archivoService.deleteArchivo(optionalArchivo.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> deleteArchivo(@PathVariable Integer id) {
+        archivoService.deleteArchivo(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

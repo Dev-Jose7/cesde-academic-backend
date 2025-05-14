@@ -1,65 +1,63 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.FranjaHoraria;
+import org.cesde.academic.dto.request.FranjaHorariaRequestDTO;
+import org.cesde.academic.dto.response.FranjaHorariaResponseDTO;
 import org.cesde.academic.service.IFranjaHorariaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/franja")
+@RequestMapping("/franja-horaria")
 public class FranjaHorariaController {
 
     @Autowired
-    private IFranjaHorariaService franjaHorariaService;
+    private IFranjaHorariaService service;
 
     @PostMapping("/crear")
-    public ResponseEntity<FranjaHoraria> createFranjaHoraria(@Valid @RequestBody FranjaHoraria franjaHoraria) {
-        FranjaHoraria nuevaFranja = franjaHorariaService.createFranjaHoraria(franjaHoraria);
-        return new ResponseEntity<>(nuevaFranja, HttpStatus.CREATED);
+    public ResponseEntity<FranjaHorariaResponseDTO> create(@Valid @RequestBody FranjaHorariaRequestDTO request) {
+        return new ResponseEntity<>(service.createFranjaHoraria(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/lista")
-    public ResponseEntity<List<FranjaHoraria>> getFranjaHorarias() {
-        List<FranjaHoraria> lista = franjaHorariaService.getFranjaHorarias();
-        if (lista.isEmpty()) {
-            return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(lista, HttpStatus.OK);
-        }
+    public ResponseEntity<List<FranjaHorariaResponseDTO>> getAll() {
+        List<FranjaHorariaResponseDTO> franjas = service.getFranjasHorarias();
+        return franjas.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(franjas, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFranjaHorariaById(@PathVariable Integer id) {
-        Optional<FranjaHoraria> optionalFranja = franjaHorariaService.getFranjaHorariaById(id);
+    public ResponseEntity<FranjaHorariaResponseDTO> getById(@PathVariable Integer id) {
+        return new ResponseEntity<>(service.getFranjaHorariaById(id), HttpStatus.OK);
+    }
 
-        return optionalFranja.map(franja -> new ResponseEntity<>(franja, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/inicio")
+    public ResponseEntity<List<FranjaHorariaResponseDTO>> getByHoraInicio(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaInicio) {
+        return new ResponseEntity<>(service.getFranjasByHoraInicio(horaInicio), HttpStatus.OK);
+    }
+
+    @GetMapping("/fin")
+    public ResponseEntity<List<FranjaHorariaResponseDTO>> getByHoraFin(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaFin) {
+        return new ResponseEntity<>(service.getFranjasByHoraFin(horaFin), HttpStatus.OK);
     }
 
     @PutMapping("/editar/{id}")
-    public ResponseEntity<FranjaHoraria> updateFranjaHoraria(@PathVariable Integer id, @Valid @RequestBody FranjaHoraria updatedFranja) {
-        Optional<FranjaHoraria> optionalFranja = franjaHorariaService.getFranjaHorariaById(id);
-
-        return optionalFranja
-                .map(franja -> new ResponseEntity<>(franjaHorariaService.updateFranjaHoraria(franja, updatedFranja), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<FranjaHorariaResponseDTO> update(@PathVariable Integer id,
+                                                           @Valid @RequestBody FranjaHorariaRequestDTO request) {
+        return new ResponseEntity<>(service.updateFranjaHoraria(id, request), HttpStatus.OK);
     }
 
     @DeleteMapping("/remover/{id}")
-    public ResponseEntity<Void> deleteFranjaHoraria(@PathVariable Integer id) {
-        Optional<FranjaHoraria> optionalFranja = franjaHorariaService.getFranjaHorariaById(id);
-
-        if (optionalFranja.isPresent()) {
-            franjaHorariaService.deleteFranjaHoraria(optionalFranja.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        service.deleteFranjaHoraria(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

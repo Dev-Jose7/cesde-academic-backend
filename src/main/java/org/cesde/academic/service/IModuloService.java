@@ -1,5 +1,7 @@
 package org.cesde.academic.service;
 
+import org.cesde.academic.dto.request.ModuloRequestDTO;
+import org.cesde.academic.dto.response.ModuloResponseDTO;
 import org.cesde.academic.model.Modulo;
 
 import java.util.List;
@@ -7,13 +9,13 @@ import java.util.Optional;
 
 public interface IModuloService {
 
-    Modulo createModulo(Modulo modulo);
-    List<Modulo> getModulos();
-    Optional<Modulo> getModuloById(Integer id);
-    Optional<Modulo> getModuloByNombre(String nombre);
-    List<Modulo> getModulosByProgramaId(Integer programaId);
-    Modulo updateModulo(Modulo modulo, Modulo moduloUpdated);
-    void deleteModulo(Modulo modulo);
+    ModuloResponseDTO createModulo(ModuloRequestDTO modulo);
+    List<ModuloResponseDTO> getModulos();
+    ModuloResponseDTO getModuloById(Integer id);
+    List<ModuloResponseDTO> getModuloByNombre(String nombre);
+    List<ModuloResponseDTO> getModulosByProgramaId(Integer programaId);
+    ModuloResponseDTO updateModulo(Integer id, ModuloRequestDTO request);
+    void deleteModulo(Integer id);
     //Los métodos CRUD estándar.
     //El metodo específico getModulosByProgramaId que utiliza la consulta findByPrograma_Id del repositorio.
 }

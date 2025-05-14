@@ -1,16 +1,24 @@
 package org.cesde.academic.service;
 
+import org.cesde.academic.dto.request.EscuelaRequestDTO;
+import org.cesde.academic.dto.response.EscuelaResponseDTO;
 import org.cesde.academic.model.Escuela;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IEscuelaService {
 
-    Escuela createEscuela(Escuela escuela);
-    List<Escuela> getEscuelas();
-    Optional<Escuela> getEscuelaById(Integer id);
-    Optional<Escuela> getEscuelaByNombre(String nombre);
-    Escuela updateEscuela(Escuela escuela, Escuela escuelaUpdated);
-    void deleteEscuela(Escuela escuela);
+    EscuelaResponseDTO createEscuela(EscuelaRequestDTO escuela);
+    List<EscuelaResponseDTO> getEscuelas();
+    EscuelaResponseDTO getEscuelaById(Integer id);
+    List<EscuelaResponseDTO> getEscuelaByNombre(String nombre);
+    EscuelaResponseDTO updateEscuela(Integer id, EscuelaRequestDTO updatedEscuela);
+    void deleteEscuela(Integer id);
+
+//    Escuela createEscuela(Escuela escuela);
+//    List<Escuela> getEscuelas();
+//    Optional<Escuela> getEscuelaById(Integer id);
+//    Optional<Escuela> getEscuelaByNombre(String nombre);
+//    Escuela updateEscuela(Escuela escuela, Escuela escuelaUpdated);
+//    void deleteEscuela(Escuela escuela);
 }

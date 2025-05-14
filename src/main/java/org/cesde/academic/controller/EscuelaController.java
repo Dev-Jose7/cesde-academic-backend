@@ -1,7 +1,8 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.Escuela;
+import org.cesde.academic.dto.request.EscuelaRequestDTO;
+import org.cesde.academic.dto.response.EscuelaResponseDTO;
 import org.cesde.academic.service.IEscuelaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/escuela")
@@ -19,20 +19,14 @@ public class EscuelaController {
     IEscuelaService escuelaService;
 
     @PostMapping("/crear")
-    public ResponseEntity<Escuela> createEscuela(@Valid @RequestBody Escuela escuela){
-        Optional<Escuela> escuelaOptional = escuelaService.getEscuelaByNombre(escuela.getNombre());
-
-        if(escuelaOptional.isEmpty()){
-            Escuela newEscuela = escuelaService.createEscuela(escuela);
-            return new ResponseEntity<>(newEscuela, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<EscuelaResponseDTO> createEscuela(@Valid @RequestBody EscuelaRequestDTO request){
+        EscuelaResponseDTO newEscuela = escuelaService.createEscuela(request);
+        return new ResponseEntity<>(newEscuela, HttpStatus.CREATED);
     }
 
     @GetMapping("/lista")
-    public ResponseEntity<List<Escuela>> getListaEscuela(){
-        List<Escuela> escuelaList = escuelaService.getEscuelas();
+    public ResponseEntity<List> getEscuelas(){
+        List<EscuelaResponseDTO> escuelaList = escuelaService.getEscuelas();
 
         if(escuelaList.isEmpty()){
             return new ResponseEntity<>(escuelaList, HttpStatus.NO_CONTENT);
@@ -43,37 +37,25 @@ public class EscuelaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEscuelaById(@PathVariable Integer id){
-        Optional<Escuela> optionalEscuela = escuelaService.getEscuelaById(id);
+        EscuelaResponseDTO escuela = escuelaService.getEscuelaById(id);
+        return new ResponseEntity<>(escuela, HttpStatus.OK);
+    }
 
-        return optionalEscuela.map(escuela -> new ResponseEntity<>(escuela, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/buscar/{nombre}")
+    public ResponseEntity<List<EscuelaResponseDTO>> getEscuelaByNombre(@PathVariable String nombre){
+        List<EscuelaResponseDTO> escuelas = escuelaService.getEscuelaByNombre(nombre);
+        return new ResponseEntity<>(escuelas, HttpStatus.OK);
     }
 
     @PutMapping("/editar/{id}")
-    public ResponseEntity<Escuela> updateEscuela(@PathVariable Integer id, @Valid @RequestBody Escuela updatedEscuela){
-        Optional<Escuela> escuelaById = escuelaService.getEscuelaById(id);
-        Optional<Escuela> escuelaByName = escuelaService.getEscuelaByNombre(updatedEscuela.getNombre());
-
-        if(escuelaById.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (escuelaByName.isPresent() && escuelaById.get().getId() != id) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<>(escuelaService.updateEscuela(escuelaById.get(), updatedEscuela), HttpStatus.OK);
+    public ResponseEntity<EscuelaResponseDTO> updateEscuela(@PathVariable Integer id, @Valid @RequestBody EscuelaRequestDTO request){
+        EscuelaResponseDTO updatedEscuela = escuelaService.updateEscuela(id, request);
+        return new ResponseEntity<>(updatedEscuela, HttpStatus.OK);
     }
 
     @DeleteMapping("/remover/{id}")
-    public ResponseEntity<Escuela> deleteEscuela(@PathVariable Integer id){
-        Optional<Escuela> optionalEscuela = escuelaService.getEscuelaById(id);
-
-        if(optionalEscuela.isPresent()){
-            escuelaService.deleteEscuela(optionalEscuela.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> deleteEscuela(@PathVariable Integer id){
+        escuelaService.deleteEscuela(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

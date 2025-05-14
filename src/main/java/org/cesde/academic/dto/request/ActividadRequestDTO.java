@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.cesde.academic.enums.TipoActividad;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,5 +26,5 @@ public class ActividadRequestDTO {
     private TipoActividad tipo;
 
     @NotNull(message = "La fecha de entrega es obligatoria")
-    private LocalDateTime fechaEntrega;
+    private LocalDate fechaEntrega;
 }

@@ -1,16 +1,15 @@
 package org.cesde.academic.repository;
 
+import org.cesde.academic.model.Clase;
 import org.cesde.academic.model.ClaseHorario;
 import org.cesde.academic.model.ClaseHorarioId;
+import org.cesde.academic.model.Horario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
-@Repository
 public interface ClaseHorarioRepository extends JpaRepository<ClaseHorario, ClaseHorarioId> {
-    Optional<ClaseHorario> findById(ClaseHorarioId claseHorarioId);
-    List<ClaseHorario> findByClase_Id(Integer claseId);
-    List<ClaseHorario> findByHorario_Id(Integer horarioId);
+    List<ClaseHorario> findByClase_Id(Integer id);
+    List<ClaseHorario> findByHorario_Id(Integer id);
+    boolean existsByClaseIdAndHorarioId(Integer claseId, Integer horarioId);
 }

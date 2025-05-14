@@ -1,17 +1,21 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Asistencia;
+import org.cesde.academic.dto.request.AsistenciaRequestDTO;
+import org.cesde.academic.dto.response.AsistenciaResponseDTO;
+import org.cesde.academic.enums.EstadoAsistencia;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface IAsistenciaService {
-
-    Asistencia createAsistencia(Asistencia asistencia);
-    List<Asistencia> getAsistencias();
-    Optional<Asistencia> getAsistenciaById(Integer id);
-    List<Asistencia> getAsistenciasByClaseId(Integer claseId);
-    List<Asistencia> getAsistenciasByEstudianteId(Integer estudianteId);
-    Asistencia updateAsistencia(Asistencia asistencia, Asistencia asistenciaUpdated);
-    void deleteAsistencia(Asistencia asistencia);
+    AsistenciaResponseDTO createAsistencia(AsistenciaRequestDTO request);
+    List<AsistenciaResponseDTO> getAsistencias();
+    AsistenciaResponseDTO getAsistenciaById(Integer id);
+    List<AsistenciaResponseDTO> getAsistenciasByClaseId(Integer claseId);
+    List<AsistenciaResponseDTO> getAsistenciasByEstudianteId(Integer estudianteId);
+    List<AsistenciaResponseDTO> getAsistenciasByFechaRange(LocalDate desde, LocalDate hasta);
+    List<AsistenciaResponseDTO> getAsistenciasByEstado(EstadoAsistencia estado);
+    AsistenciaResponseDTO updateAsistencia(Integer id, AsistenciaRequestDTO request);
+    void deleteAsistencia(Integer id);
 }

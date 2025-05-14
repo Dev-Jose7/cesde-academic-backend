@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class GrupoResponseDTO {
 
     private final Integer id;
+    private final String codigo;
     private final Integer programaId;
     private final Integer semestreId;
     private final EstadoGrupo estado;

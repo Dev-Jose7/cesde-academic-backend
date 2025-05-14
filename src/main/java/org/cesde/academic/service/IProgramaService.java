@@ -1,5 +1,7 @@
 package org.cesde.academic.service;
 
+import org.cesde.academic.dto.request.ProgramaRequestDTO;
+import org.cesde.academic.dto.response.ProgramaResponseDTO;
 import org.cesde.academic.model.Programa;
 
 import java.util.List;
@@ -7,14 +9,15 @@ import java.util.Optional;
 
 public interface IProgramaService {
 
-    Programa createPrograma(Programa programa);
-    List<Programa> getProgramas();
-    Optional<Programa> getProgramaById(Integer id);
-    Optional<Programa> getProgramaByNombre(String nombre);
-    List<Programa> getProgramasByEscuelaId(Integer escuelaId);
-    Programa updatePrograma(Programa programa, Programa programaUpdated);
-    void deletePrograma(Programa programa);
+    ProgramaResponseDTO createPrograma(ProgramaRequestDTO request);
+    List<ProgramaResponseDTO> getProgramas();
+    ProgramaResponseDTO getProgramaById(Integer id);
+    List<ProgramaResponseDTO> getProgramaByNombre(String nombre);
+    List<ProgramaResponseDTO> getProgramasByEscuelaId(Integer escuelaId);
+    ProgramaResponseDTO updatePrograma(Integer id, ProgramaRequestDTO request);
+    void deletePrograma(Integer id);
 
-    //Incluye los métodos CRUD comunes.
-    //Añade getProgramasByEscuelaId, que corresponde al contrato personalizado findByEscuela_Id de su repositorio (ProgramaRepository).
+    // Incluye los métodos CRUD comunes.
+    // Añade getProgramasByEscuelaId, que corresponde al contrato personalizado findByEscuela_Id de su repositorio
+    // (ProgramaRepository).
 }

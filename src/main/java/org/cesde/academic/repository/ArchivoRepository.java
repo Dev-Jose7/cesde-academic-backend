@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ArchivoRepository extends JpaRepository<Archivo, Integer> {
-    List<Archivo> findByClase_Id(Integer claseId);
-    List<Archivo> findByUsuario_Id(Integer usuarioId);
+    List<Archivo> findByUsuarioId(Integer id);
+    List<Archivo> findAllByNombreArchivoContainingIgnoreCase(String nombreArchivo);
+    List<Archivo> findAllByRutaArchivoContainingIgnoreCase(String rutaArchivo);
 }

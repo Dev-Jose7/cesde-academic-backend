@@ -1,15 +1,17 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.FranjaHoraria;
+import org.cesde.academic.dto.request.FranjaHorariaRequestDTO;
+import org.cesde.academic.dto.response.FranjaHorariaResponseDTO;
 
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface IFranjaHorariaService {
-
-    FranjaHoraria createFranjaHoraria(FranjaHoraria franjaHoraria);
-    List<FranjaHoraria> getFranjaHorarias();
-    Optional<FranjaHoraria> getFranjaHorariaById(Integer id);
-    FranjaHoraria updateFranjaHoraria(FranjaHoraria franjaHoraria, FranjaHoraria franjaHorariaUpdated);
-    void deleteFranjaHoraria(FranjaHoraria franjaHoraria);
+    FranjaHorariaResponseDTO createFranjaHoraria(FranjaHorariaRequestDTO request);
+    List<FranjaHorariaResponseDTO> getFranjasHorarias();
+    FranjaHorariaResponseDTO getFranjaHorariaById(Integer id);
+    List<FranjaHorariaResponseDTO> getFranjasByHoraInicio(LocalTime horaInicio);
+    List<FranjaHorariaResponseDTO> getFranjasByHoraFin(LocalTime horaFin);
+    FranjaHorariaResponseDTO updateFranjaHoraria(Integer id, FranjaHorariaRequestDTO request);
+    void deleteFranjaHoraria(Integer id);
 }

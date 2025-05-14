@@ -1,5 +1,6 @@
 package org.cesde.academic.dto.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.cesde.academic.enums.EstadoUsuario;
@@ -9,6 +10,10 @@ import org.cesde.academic.enums.TipoUsuario;
 @Setter
 @ToString
 public class UsuarioRequestDTO {
+
+    @NotNull
+    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
+    private String cedula;
 
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres")

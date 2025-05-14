@@ -1,17 +1,17 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Archivo;
+import org.cesde.academic.dto.request.ArchivoRequestDTO;
+import org.cesde.academic.dto.response.ArchivoResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IArchivoService {
-
-    Archivo createArchivo(Archivo archivo);
-    List<Archivo> getArchivos();
-    Optional<Archivo> getArchivoById(Integer id);
-    List<Archivo> getArchivosByClaseId(Integer claseId);
-    List<Archivo> getArchivosByUsuarioId(Integer usuarioId);
-    Archivo updateArchivo(Archivo archivo, Archivo archivoUpdated);
-    void deleteArchivo(Archivo archivo);
+    ArchivoResponseDTO createArchivo(ArchivoRequestDTO request);
+    List<ArchivoResponseDTO> getArchivos();
+    ArchivoResponseDTO getArchivoById(Integer id);
+    List<ArchivoResponseDTO> getArchivosByUsuarioId(Integer usuarioId);
+    List<ArchivoResponseDTO> getArchivosByNombreArchivo(String nombreArchivo);
+    List<ArchivoResponseDTO> getArchivosByRutaArchivo(String rutaArchivo);
+    ArchivoResponseDTO updateArchivo(Integer id, ArchivoRequestDTO request);
+    void deleteArchivo(Integer id);
 }

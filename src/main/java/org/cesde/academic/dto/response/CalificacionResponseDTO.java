@@ -1,8 +1,10 @@
 package org.cesde.academic.dto.response;
 
 import lombok.*;
+import org.cesde.academic.enums.TipoActividad;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -11,9 +13,9 @@ import java.time.LocalDateTime;
 public class CalificacionResponseDTO {
 
     private final Integer id;
-    private final Integer actividadId;
-    private final Integer estudianteId;
-    private final LocalDateTime fecha;
+    private final TipoActividad actividad;
+    private final String estudiante;
+    private final LocalDate fecha;
     private final BigDecimal nota;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 public class SemestreResponseDTO {
+    private final Integer id;
     private final String nombre;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;

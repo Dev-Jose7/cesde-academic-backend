@@ -80,3 +80,13 @@ public class GrupoEstudiante {
                 '}';
     }
 }
+
+// GrupoEstudiante usa una clave compuesta (grupo_id, estudiante_id). Eso significa que ambas claves forman el
+// identificador primario. Como consecuencia:
+// No puedes cambiar los valores de la clave primaria en una actualización (PUT), porque JPA trata el ID
+// como inmutable una vez persistido.
+// ¿Cómo manejarlo correctamente?: Eliminar y volver a crear con las nuevas claves
+// Este es el enfoque más limpio y seguro en estos casos.
+// La clave primaria compuesta se generará a través de una clase el cual recibirá los datos de la claves foraneas
+// La instancia que se generé de esta clase será la clave primeria compuesta y con esta instancia se puede hacer
+// las consultas usando los repositorios
