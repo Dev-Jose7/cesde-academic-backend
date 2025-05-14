@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,7 +34,7 @@ public class Calificacion {
 
     @NotNull(message = "La fecha es obligatoria")
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @DecimalMin(value = "0.0", inclusive = true, message = "La nota mínima es 0.0")
     @DecimalMax(value = "5.0", inclusive = true, message = "La nota máxima es 5.0")
@@ -76,11 +77,11 @@ public class Calificacion {
         this.estudiante = estudiante;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

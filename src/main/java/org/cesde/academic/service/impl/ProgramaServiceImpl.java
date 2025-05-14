@@ -1,5 +1,7 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.ProgramaRequestDTO;
+import org.cesde.academic.dto.response.ProgramaResponseDTO;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Escuela;
 import org.cesde.academic.model.Programa;
@@ -9,6 +11,7 @@ import org.cesde.academic.service.IProgramaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,46 +25,104 @@ public class ProgramaServiceImpl implements IProgramaService {
     private EscuelaRepository escuelaRepository;
 
     @Override
-    public Programa createPrograma(Programa programa) {
-        Escuela escuela = escuelaRepository.findById(programa.getEscuela().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Escuela no existente"));
+    public ProgramaResponseDTO createPrograma(ProgramaRequestDTO request) {
+        validateNombreUnique(request.getNombre(), null);
+        Escuela escuela = getEscuelaByIdOrException(request.getEscuelaId());
 
+        Programa programa = createEntity(request);
         programa.setEscuela(escuela);
-        return programaRepository.save(programa);
+        return createResponse(programaRepository.save(programa));
     }
 
     @Override
-    public List<Programa> getProgramas() {
-        return programaRepository.findAll();
+    public List<ProgramaResponseDTO> getProgramas() {
+        List<Programa> programas = programaRepository.findAll();
+        return createResponseList(programas);
     }
 
     @Override
-    public Optional<Programa> getProgramaById(Integer id) {
-        return programaRepository.findById(id);
+    public ProgramaResponseDTO getProgramaById(Integer id) {
+        Programa programa = getProgramaByIdOrException(id);
+        return createResponse(programa);
     }
 
     @Override
-    public Optional<Programa> getProgramaByNombre(String nombre) {
-        return programaRepository.findByNombre(nombre);
+    public List<ProgramaResponseDTO> getProgramaByNombre(String nombre) {
+        List<Programa> programas = programaRepository.findAllByNombreContainingIgnoreCase(nombre);
+        return createResponseList(programas);
     }
 
     @Override
-    public List<Programa> getProgramasByEscuelaId(Integer escuelaId) {
-        return programaRepository.findByEscuela_Id(escuelaId);
+    public List<ProgramaResponseDTO> getProgramasByEscuelaId(Integer escuelaId) {
+        List<Programa> programas = programaRepository.findByEscuela_Id(escuelaId);
+        return createResponseList(programas);
     }
 
     @Override
-    public Programa updatePrograma(Programa programa, Programa programaUpdated) {
-        Escuela escuela = escuelaRepository.findById(programaUpdated.getEscuela().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Escuela no existente"));
+    public ProgramaResponseDTO updatePrograma(Integer id, ProgramaRequestDTO request) {
+        Programa oldPrograma = getProgramaByIdOrException(id);
+        Escuela escuela = getEscuelaByIdOrException(request.getEscuelaId());
+        validateNombreUnique(request.getNombre(), id);
 
-        programaUpdated.setId(programa.getId());
-        programaUpdated.setEscuela(escuela);
-        return programaRepository.save(programaUpdated);
+        Programa updatedPrograma = createEntity(request);
+        updatedPrograma.setId(oldPrograma.getId());
+        updatedPrograma.setEscuela(escuela);
+        updatedPrograma.setCreado(oldPrograma.getCreado());
+
+        return createResponse(programaRepository.save(updatedPrograma));
     }
 
     @Override
-    public void deletePrograma(Programa programa) {
+    public void deletePrograma(Integer id) {
+        Programa programa = getProgramaByIdOrException(id);
         programaRepository.delete(programa);
+    }
+
+    // Metodos auxiliares
+    private Programa getProgramaByIdOrException(Integer id){
+        return programaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no existente"));
+    }
+
+    private Escuela getEscuelaByIdOrException(Integer id){
+        return escuelaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Escuela no existente"));
+    }
+
+    private void validateNombreUnique(String nombre, Integer id){
+        boolean nombreExiste = id == null
+                ? programaRepository.existsByNombreIgnoreCase(nombre)
+                : programaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
+
+        if (nombreExiste){
+            throw new RecursoNoEncontradoException("Este programa ya se encuentra registrado");
+        }
+    }
+
+    private Programa createEntity(ProgramaRequestDTO request){
+        Programa programa = new Programa();
+        programa.setEscuela(getEscuelaByIdOrException(request.getEscuelaId()));
+        programa.setNombre(request.getNombre());
+        return programa;
+    }
+
+    private ProgramaResponseDTO createResponse(Programa programa){
+        return new ProgramaResponseDTO(
+                programa.getId(),
+                programa.getEscuela().getId(),
+                programa.getNombre(),
+                programa.getCreado(),
+                programa.getActualizado()
+        );
+    }
+
+    private List<ProgramaResponseDTO> createResponseList(List<Programa> programas){
+        List<ProgramaResponseDTO> programasResponse = new ArrayList<>();
+
+        for (Programa programa : programas){
+            programasResponse.add(createResponse(programa));
+        }
+
+        return programasResponse;
     }
 }

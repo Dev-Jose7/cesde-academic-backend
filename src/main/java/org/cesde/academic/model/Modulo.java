@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.TipoModulo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "modulo")
 public class Modulo {
 
-    public enum Tipo { MATERIA, CURSO, CATEDRA, SEMINARIO }
+//    public enum Tipo { MATERIA, CURSO, CATEDRA, SEMINARIO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +33,9 @@ public class Modulo {
     private String nombre;
 
     @NotNull(message = "El tipo de módulo no puede ser nulo")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // Guarda el nombre del valor del enum como una cadena de texto en la base de datos.
     @Column(nullable = false, length = 50)
-    private Tipo tipo;
+    private TipoModulo tipo;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -74,11 +75,11 @@ public class Modulo {
         this.nombre = nombre;
     }
 
-    public Tipo getTipo() {
+    public TipoModulo getTipo() {
         return tipo;
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(TipoModulo tipo) {
         this.tipo = tipo;
     }
 

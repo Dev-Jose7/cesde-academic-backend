@@ -5,15 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.TipoActividad;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "actividad")
 public class Actividad {
-    public enum Tipo { TAREA, TALLER, EXAMEN, PROYECTO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +37,11 @@ public class Actividad {
     @NotNull(message = "El tipo es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Tipo tipo;
+    private TipoActividad tipo;
 
     @NotNull(message = "La fecha de entrega es obligatoria")
     @Column(name = "fecha_entrega", nullable = false)
-    private LocalDateTime fechaEntrega;
+    private LocalDate fechaEntrega;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -86,19 +87,19 @@ public class Actividad {
         this.descripcion = descripcion;
     }
 
-    public Tipo getTipo() {
+    public TipoActividad getTipo() {
         return tipo;
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(TipoActividad tipo) {
         this.tipo = tipo;
     }
 
-    public LocalDateTime getFechaEntrega() {
+    public LocalDate getFechaEntrega() {
         return fechaEntrega;
     }
 
-    public void setFechaEntrega(LocalDateTime fechaEntrega) {
+    public void setFechaEntrega(LocalDate fechaEntrega) {
         this.fechaEntrega = fechaEntrega;
     }
 

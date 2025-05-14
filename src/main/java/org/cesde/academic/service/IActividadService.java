@@ -1,16 +1,18 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Actividad;
+import org.cesde.academic.dto.request.ActividadRequestDTO;
+import org.cesde.academic.dto.response.ActividadResponseDTO;
+import org.cesde.academic.enums.TipoActividad;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IActividadService {
-
-    Actividad createActividad(Actividad actividad);
-    List<Actividad> getActividades();
-    Optional<Actividad> getActividadById(Integer id);
-    List<Actividad> getActividadesByClaseId(Integer claseId);
-    Actividad updateActividad(Actividad actividad, Actividad actividadUpdated);
-    void deleteActividad(Actividad actividad);
+    ActividadResponseDTO createActividad(ActividadRequestDTO request);
+    List<ActividadResponseDTO> getActividades();
+    ActividadResponseDTO getActividadById(Integer id);
+    List<ActividadResponseDTO> getActividadesByClase(Integer claseId);
+    List<ActividadResponseDTO> getActividadesByTitulo(String titulo);
+    List<ActividadResponseDTO> getActividadesByTipo(TipoActividad tipo);
+    ActividadResponseDTO updateActividad(Integer id, ActividadRequestDTO request);
+    void deleteActividad(Integer id);
 }

@@ -1,18 +1,18 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.ArchivoRequestDTO;
+import org.cesde.academic.dto.response.ArchivoResponseDTO;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Archivo;
-import org.cesde.academic.model.Clase;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.ArchivoRepository;
-import org.cesde.academic.repository.ClaseRepository;
 import org.cesde.academic.repository.UsuarioRepository;
 import org.cesde.academic.service.IArchivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ArchivoServiceImpl implements IArchivoService {
@@ -21,60 +21,90 @@ public class ArchivoServiceImpl implements IArchivoService {
     private ArchivoRepository archivoRepository;
 
     @Autowired
-    private ClaseRepository claseRepository;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Archivo createArchivo(Archivo archivo) {
-        Clase clase = claseRepository.findById(archivo.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
+    public ArchivoResponseDTO createArchivo(ArchivoRequestDTO request) {
+        Archivo archivo = createEntity(request);
+        return createResponse(archivoRepository.save(archivo));
+    }
 
-        Usuario usuario = usuarioRepository.findById(archivo.getUsuario().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
+    @Override
+    public List<ArchivoResponseDTO> getArchivos() {
+        return createResponseList(archivoRepository.findAll());
+    }
 
-        archivo.setClase(clase);
+    @Override
+    public ArchivoResponseDTO getArchivoById(Integer id) {
+        return createResponse(getArchivoByIdOrException(id));
+    }
+
+    @Override
+    public List<ArchivoResponseDTO> getArchivosByUsuarioId(Integer usuarioId) {
+        return createResponseList(archivoRepository.findByUsuarioId(usuarioId));
+    }
+
+    @Override
+    public List<ArchivoResponseDTO> getArchivosByNombreArchivo(String nombreArchivo) {
+        return createResponseList(archivoRepository.findAllByNombreArchivoContainingIgnoreCase(nombreArchivo));
+    }
+
+    @Override
+    public List<ArchivoResponseDTO> getArchivosByRutaArchivo(String rutaArchivo) {
+        return createResponseList(archivoRepository.findAllByRutaArchivoContainingIgnoreCase(rutaArchivo));
+    }
+
+    @Override
+    public ArchivoResponseDTO updateArchivo(Integer id, ArchivoRequestDTO request) {
+        Archivo original = getArchivoByIdOrException(id);
+        Archivo updated = createEntity(request);
+        updated.setId(original.getId());
+        updated.setCreado(original.getCreado());
+        return createResponse(archivoRepository.save(updated));
+    }
+
+    @Override
+    public void deleteArchivo(Integer id) {
+        Archivo archivo = getArchivoByIdOrException(id);
+        archivoRepository.delete(archivo);
+    }
+
+    // Métodos auxiliares
+
+    private Archivo getArchivoByIdOrException(Integer id) {
+        return archivoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Archivo no encontrado"));
+    }
+
+    private Archivo createEntity(ArchivoRequestDTO request) {
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+
+        Archivo archivo = new Archivo();
         archivo.setUsuario(usuario);
-        return archivoRepository.save(archivo);
+        archivo.setNombreArchivo(request.getNombreArchivo());
+        archivo.setRutaArchivo(request.getRutaArchivo());
+        archivo.setFechaSubida(request.getFechaSubida());
+        return archivo;
     }
 
-    @Override
-    public List<Archivo> getArchivos() {
-        return archivoRepository.findAll();
+    private ArchivoResponseDTO createResponse(Archivo archivo) {
+        return new ArchivoResponseDTO(
+                archivo.getId(),
+                archivo.getUsuario().getNombre(),
+                archivo.getNombreArchivo(),
+                archivo.getRutaArchivo(),
+                archivo.getFechaSubida(),
+                archivo.getCreado(),
+                archivo.getActualizado()
+        );
     }
 
-    @Override
-    public Optional<Archivo> getArchivoById(Integer id) {
-        return archivoRepository.findById(id);
-    }
-
-    @Override
-    public List<Archivo> getArchivosByClaseId(Integer claseId) {
-        return archivoRepository.findByClase_Id(claseId);
-    }
-
-    @Override
-    public List<Archivo> getArchivosByUsuarioId(Integer usuarioId) {
-        return archivoRepository.findByUsuario_Id(usuarioId);
-    }
-
-    @Override
-    public Archivo updateArchivo(Archivo archivo, Archivo archivoUpdated) {
-        Clase clase = claseRepository.findById(archivoUpdated.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
-
-        Usuario usuario = usuarioRepository.findById(archivoUpdated.getUsuario().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
-
-        archivoUpdated.setId(archivo.getId()); // Asignamos el id del archivo original al actualizado
-        archivoUpdated.setClase(clase);
-        archivoUpdated.setUsuario(usuario);
-        return archivoRepository.save(archivoUpdated); // Este save realiza un update en lugar de un insert
-    }
-
-    @Override
-    public void deleteArchivo(Archivo archivo) {
-        archivoRepository.delete(archivo); // Eliminamos el archivo
+    private List<ArchivoResponseDTO> createResponseList(List<Archivo> archivos) {
+        List<ArchivoResponseDTO> responseList = new ArrayList<>();
+        for (Archivo archivo : archivos) {
+            responseList.add(createResponse(archivo));
+        }
+        return responseList;
     }
 }

@@ -9,6 +9,12 @@ import java.util.Optional;
 
 @Repository
 public interface ProgramaRepository extends JpaRepository<Programa, Integer> {
+    boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Integer id);
+    List<Programa> findAllByNombreContainingIgnoreCase(String nombre);
     List<Programa> findByEscuela_Id(Integer escuelaId);
-    Optional<Programa> findByNombre(String nombre);
+
+    // findByEscuela_id
+    // Va a consultar la propiedad escuela de la entidad Programa, y al ser una instancia de la clase Escuela,
+    // accede al id para filtrar los programas mediante el ID de la escuela asociada.
 }

@@ -1,15 +1,19 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.Asistencia;
+import org.cesde.academic.dto.request.AsistenciaRequestDTO;
+import org.cesde.academic.dto.response.AsistenciaResponseDTO;
+import org.cesde.academic.enums.EstadoAsistencia;
 import org.cesde.academic.service.IAsistenciaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/asistencia")
@@ -18,79 +22,67 @@ public class AsistenciaController {
     @Autowired
     private IAsistenciaService asistenciaService;
 
-    // Endpoint para crear una nueva asistencia
     @PostMapping("/crear")
-    public ResponseEntity<Asistencia> createAsistencia(@Valid @RequestBody Asistencia asistencia) {
-        Asistencia newAsistencia = asistenciaService.createAsistencia(asistencia);
-        return new ResponseEntity<>(newAsistencia, HttpStatus.CREATED);
+    public ResponseEntity<AsistenciaResponseDTO> createAsistencia(@Valid @RequestBody AsistenciaRequestDTO request) {
+        return new ResponseEntity<>(asistenciaService.createAsistencia(request), HttpStatus.CREATED);
     }
 
-    // Endpoint para obtener todas las asistencias
     @GetMapping("/lista")
-    public ResponseEntity<List<Asistencia>> getListaAsistencias() {
-        List<Asistencia> asistenciaList = asistenciaService.getAsistencias();
-
-        if (asistenciaList.isEmpty()) {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<AsistenciaResponseDTO>> getAsistencias() {
+        List<AsistenciaResponseDTO> asistencias = asistenciaService.getAsistencias();
+        return asistencias.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(asistencias, HttpStatus.OK);
     }
 
-    // Endpoint para obtener una asistencia por su ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAsistenciaById(@PathVariable Integer id) {
-        Optional<Asistencia> optionalAsistencia = asistenciaService.getAsistenciaById(id);
-
-        return optionalAsistencia
-                .map(asistencia -> new ResponseEntity<>(asistencia, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<AsistenciaResponseDTO> getAsistenciaById(@PathVariable Integer id) {
+        return new ResponseEntity<>(asistenciaService.getAsistenciaById(id), HttpStatus.OK);
     }
 
-    // Endpoint para obtener las asistencias por ID de clase
     @GetMapping("/clase/{id}")
-    public ResponseEntity<List<Asistencia>> getAsistenciasByClaseId(@PathVariable Integer claseId) {
-        List<Asistencia> asistenciaList = asistenciaService.getAsistenciasByClaseId(claseId);
-
-        if (asistenciaList.isEmpty()) {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<AsistenciaResponseDTO>> getAsistenciasByClaseId(@PathVariable Integer id) {
+        List<AsistenciaResponseDTO> asistencias = asistenciaService.getAsistenciasByClaseId(id);
+        return asistencias.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(asistencias, HttpStatus.OK);
     }
 
-    // Endpoint para obtener las asistencias por ID de estudiante
     @GetMapping("/estudiante/{id}")
-    public ResponseEntity<List<Asistencia>> getAsistenciasByEstudianteId(@PathVariable Integer estudianteId) {
-        List<Asistencia> asistenciaList = asistenciaService.getAsistenciasByEstudianteId(estudianteId);
-
-        if (asistenciaList.isEmpty()) {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(asistenciaList, HttpStatus.OK);
-        }
+    public ResponseEntity<List<AsistenciaResponseDTO>> getAsistenciasByEstudianteId(@PathVariable Integer id) {
+        List<AsistenciaResponseDTO> asistencias = asistenciaService.getAsistenciasByEstudianteId(id);
+        return asistencias.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(asistencias, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar una asistencia
+    @GetMapping("/buscar/fecha")
+    public ResponseEntity<List<AsistenciaResponseDTO>> getAsistenciasByFechaRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate hasta) {
+        List<AsistenciaResponseDTO> asistencias = asistenciaService.getAsistenciasByFechaRange(desde, hasta);
+        return asistencias.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(asistencias, HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar/estado/{estado}")
+    public ResponseEntity<List<AsistenciaResponseDTO>> getAsistenciasByEstado(@PathVariable EstadoAsistencia estado) {
+        List<AsistenciaResponseDTO> asistencias = asistenciaService.getAsistenciasByEstado(estado);
+        return asistencias.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(asistencias, HttpStatus.OK);
+    }
+
     @PutMapping("/editar/{id}")
-    public ResponseEntity<Asistencia> updateAsistencia(@PathVariable Integer id, @Valid @RequestBody Asistencia updatedAsistencia) {
-        Optional<Asistencia> optionalAsistencia = asistenciaService.getAsistenciaById(id);
-
-        return optionalAsistencia
-                .map(asistencia -> new ResponseEntity<>(asistenciaService.updateAsistencia(asistencia, updatedAsistencia), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<AsistenciaResponseDTO> updateAsistencia(@PathVariable Integer id,
+                                                                  @Valid @RequestBody AsistenciaRequestDTO request) {
+        return new ResponseEntity<>(asistenciaService.updateAsistencia(id, request), HttpStatus.OK);
     }
 
-    // Endpoint para eliminar una asistencia
     @DeleteMapping("/remover/{id}")
-    public ResponseEntity<Asistencia> deleteAsistencia(@PathVariable Integer id) {
-        Optional<Asistencia> optionalAsistencia = asistenciaService.getAsistenciaById(id);
-
-        if (optionalAsistencia.isPresent()) {
-            asistenciaService.deleteAsistencia(optionalAsistencia.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> deleteAsistencia(@PathVariable Integer id) {
+        asistenciaService.deleteAsistencia(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

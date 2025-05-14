@@ -1,6 +1,11 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.ReporteRequestDTO;
+import org.cesde.academic.dto.response.ClaseResponseInfoDTO;
+import org.cesde.academic.dto.response.ReporteResponseDTO;
+import org.cesde.academic.enums.EstadoReporte;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
+import org.cesde.academic.model.Actividad;
 import org.cesde.academic.model.Clase;
 import org.cesde.academic.model.Reporte;
 import org.cesde.academic.model.Usuario;
@@ -11,8 +16,9 @@ import org.cesde.academic.service.IReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReporteServiceImpl implements IReporteService {
@@ -27,55 +33,106 @@ public class ReporteServiceImpl implements IReporteService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Reporte createReporte(Reporte reporte) {
-        Clase clase = claseRepository.findById(reporte.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
+    public ReporteResponseDTO createReporte(ReporteRequestDTO request) {
+        Reporte reporte = createEntity(request);
+        return createResponse(reporteRepository.save(reporte));
+    }
 
-        Usuario usuario = usuarioRepository.findById(reporte.getUsuario().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
+    @Override
+    public List<ReporteResponseDTO> getReportes() {
+        return createResponseList(reporteRepository.findAll());
+    }
 
+    @Override
+    public ReporteResponseDTO getReporteById(Integer id) {
+        return createResponse(getReporteByIdOrException(id));
+    }
+
+    @Override
+    public List<ReporteResponseDTO> getReportesByClaseId(Integer claseId) {
+        return createResponseList(reporteRepository.findAllByClaseId(claseId));
+    }
+
+    @Override
+    public List<ReporteResponseDTO> getReportesByUsuarioId(Integer usuarioId) {
+        return createResponseList(reporteRepository.findAllByUsuarioId(usuarioId));
+    }
+
+    @Override
+    public List<ReporteResponseDTO> getReportesByFecha(LocalDate fecha) {
+        return createResponseList(reporteRepository.findAllByFecha(fecha));
+    }
+
+    @Override
+    public List<ReporteResponseDTO> getReportesByEstado(EstadoReporte estado) {
+        return createResponseList(reporteRepository.findAllByEstado(estado));
+    }
+
+    @Override
+    public ReporteResponseDTO updateReporte(Integer id, ReporteRequestDTO request) {
+        Reporte original = getReporteByIdOrException(id);
+        Reporte updated = createEntity(request);
+        updated.setId(original.getId());
+        updated.setCreado(original.getCreado());
+        return createResponse(reporteRepository.save(updated));
+    }
+
+    @Override
+    public void deleteReporte(Integer id) {
+        Reporte reporte = getReporteByIdOrException(id);
+        reporteRepository.delete(reporte);
+    }
+
+    // Métodos auxiliares
+
+    private Reporte getReporteByIdOrException(Integer id) {
+        return reporteRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Reporte no encontrado"));
+    }
+
+    private Reporte createEntity(ReporteRequestDTO request) {
+        Clase clase = claseRepository.findById(request.getClaseId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no encontrada"));
+
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+
+        Reporte reporte = new Reporte();
         reporte.setClase(clase);
         reporte.setUsuario(usuario);
-        return reporteRepository.save(reporte);
+        reporte.setDescripcion(request.getDescripcion());
+        reporte.setFecha(request.getFecha());
+        reporte.setEstado(request.getEstado());
+
+        return reporte;
     }
 
-    @Override
-    public List<Reporte> getReportes() {
-        return reporteRepository.findAll();
+    private ReporteResponseDTO createResponse(Reporte reporte) {
+        return new ReporteResponseDTO(
+                reporte.getId(),
+                createClaseInfo(reporte),
+                reporte.getUsuario().getNombre(),
+                reporte.getDescripcion(),
+                reporte.getFecha(),
+                reporte.getEstado(),
+                reporte.getCreado(),
+                reporte.getActualizado()
+        );
     }
 
-    @Override
-    public Optional<Reporte> getReporteById(Integer id) {
-        return reporteRepository.findById(id);
+    private List<ReporteResponseDTO> createResponseList(List<Reporte> reportes) {
+        List<ReporteResponseDTO> list = new ArrayList<>();
+        for (Reporte reporte : reportes) {
+            list.add(createResponse(reporte));
+        }
+        return list;
     }
 
-    @Override
-    public List<Reporte> getReportesByClaseId(Integer claseId) {
-        return reporteRepository.findByClase_Id(claseId);
-    }
-
-    @Override
-    public List<Reporte> getReportesByUsuarioId(Integer usuarioId) {
-        return reporteRepository.findByUsuario_Id(usuarioId);
-    }
-
-    @Override
-    public Reporte updateReporte(Reporte reporte, Reporte reporteUpdated) {
-        Clase clase = claseRepository.findById(reporteUpdated.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
-
-        Usuario usuario = usuarioRepository.findById(reporteUpdated.getUsuario().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
-
-
-        reporteUpdated.setId(reporte.getId());
-        reporteUpdated.setClase(clase);
-        reporteUpdated.setUsuario(usuario);
-        return reporteRepository.save(reporteUpdated); // Esto hará un UPDATE
-    }
-
-    @Override
-    public void deleteReporte(Reporte reporte) {
-        reporteRepository.delete(reporte);
+    private ClaseResponseInfoDTO createClaseInfo(Reporte reporte){
+        return new ClaseResponseInfoDTO(
+                reporte.getClase().getGrupo().getCodigo(),
+                reporte.getClase().getDocente().getNombre(),
+                reporte.getClase().getModulo().getNombre()
+        );
     }
 }

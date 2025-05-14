@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.EstadoGrupo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,12 +14,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "grupo")
 public class Grupo {
-    public enum Estado { ACTIVO, FINALIZADO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
+
+    @NotNull
+    @Size(min = 1, max = 20, message = "El código no puede ser mayor a 20 caracteres")
+    @Column(nullable = false, unique = true)
+    private String codigo;
 
     @NotNull(message = "El programa no puede ser nulo")
     @ManyToOne
@@ -29,9 +35,10 @@ public class Grupo {
     @JoinColumn(name = "semestre_id", nullable = false)
     private Semestre semestre;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Estado estado;
+    private EstadoGrupo estado;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -53,6 +60,14 @@ public class Grupo {
         this.id = id;
     }
 
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
     public Programa getPrograma() {
         return programa;
     }
@@ -69,11 +84,11 @@ public class Grupo {
         this.semestre = semestre;
     }
 
-    public Estado getEstado() {
+    public EstadoGrupo getEstado() {
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoGrupo estado) {
         this.estado = estado;
     }
 

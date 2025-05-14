@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.EstadoUsuario;
+import org.cesde.academic.enums.TipoUsuario;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,13 +16,18 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-    public enum Tipo { ESTUDIANTE, DOCENTE, ADMINISTRATIVO, DIRECTIVO }
-    public enum Estado { ACTIVO, INACTIVO, SUSPENDIDO, ELIMINADO }
+//    public enum Tipo { ESTUDIANTE, DOCENTE, ADMINISTRATIVO, DIRECTIVO }
+//    public enum Estado { ACTIVO, INACTIVO, SUSPENDIDO, ELIMINADO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private Integer id;
+
+    @NotNull
+    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
+    @Column(nullable = false, unique = true)
+    private String cedula;
 
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres")
@@ -41,11 +48,11 @@ public class Usuario {
     @NotNull(message = "El estado no puede ser nulo")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Tipo tipo;
+    private TipoUsuario tipo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Estado estado;
+    private EstadoUsuario estado;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -65,6 +72,14 @@ public class Usuario {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
     }
 
     public String getNombre() {
@@ -91,19 +106,19 @@ public class Usuario {
         this.contrasena = contrasena;
     }
 
-    public Tipo getTipo() {
+    public TipoUsuario getTipo() {
         return tipo;
     }
 
-    public void setTipo(Tipo tipo) {
+    public void setTipo(TipoUsuario tipo) {
         this.tipo = tipo;
     }
 
-    public Estado getEstado() {
+    public EstadoUsuario getEstado() {
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoUsuario estado) {
         this.estado = estado;
     }
 

@@ -1,17 +1,20 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Reporte;
+import org.cesde.academic.dto.request.ReporteRequestDTO;
+import org.cesde.academic.dto.response.ReporteResponseDTO;
+import org.cesde.academic.enums.EstadoReporte;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface IReporteService {
-
-    Reporte createReporte(Reporte reporte);
-    List<Reporte> getReportes();
-    Optional<Reporte> getReporteById(Integer id);
-    List<Reporte> getReportesByClaseId(Integer claseId);
-    List<Reporte> getReportesByUsuarioId(Integer usuarioId);
-    Reporte updateReporte(Reporte reporte, Reporte reporteUpdated);
-    void deleteReporte(Reporte reporte);
+    ReporteResponseDTO createReporte(ReporteRequestDTO request);
+    List<ReporteResponseDTO> getReportes();
+    ReporteResponseDTO getReporteById(Integer id);
+    List<ReporteResponseDTO> getReportesByClaseId(Integer claseId);
+    List<ReporteResponseDTO> getReportesByUsuarioId(Integer usuarioId);
+    List<ReporteResponseDTO> getReportesByFecha(LocalDate fecha);
+    List<ReporteResponseDTO> getReportesByEstado(EstadoReporte estado);
+    ReporteResponseDTO updateReporte(Integer id, ReporteRequestDTO request);
+    void deleteReporte(Integer id);
 }

@@ -1,15 +1,16 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Dia;
+import org.cesde.academic.dto.request.DiaRequestDTO;
+import org.cesde.academic.dto.response.DiaResponseDTO;
+import org.cesde.academic.enums.NombreDia;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IDiaService {
-
-    Dia createDia(Dia dia);
-    List<Dia> getDias();
-    Optional<Dia> getDiaById(Integer id);
-    Dia updateDia(Dia dia, Dia diaUpdated);
-    void deleteDia(Dia dia);
+    DiaResponseDTO createDia(DiaRequestDTO request);
+    List<DiaResponseDTO> getDias();
+    DiaResponseDTO getDiaById(Integer id);
+    DiaResponseDTO getDiaByNombre(NombreDia nombre);
+    DiaResponseDTO updateDia(Integer id, DiaRequestDTO request);
+    void deleteDia(Integer id);
 }

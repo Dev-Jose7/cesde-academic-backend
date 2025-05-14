@@ -1,7 +1,8 @@
 package org.cesde.academic.controller;
 
 import jakarta.validation.Valid;
-import org.cesde.academic.model.Semestre;
+import org.cesde.academic.dto.request.SemestreRequestDTO;
+import org.cesde.academic.dto.response.SemestreResponseDTO;
 import org.cesde.academic.service.ISemestreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,63 +10,57 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/semestre")
 public class SemestreController {
 
     @Autowired
-    ISemestreService semestreService;
+    private ISemestreService semestreService;
 
-    // Endpoint para crear un nuevo semestre
     @PostMapping("/crear")
-    public ResponseEntity<Semestre> createSemestre(@Valid @RequestBody Semestre semestre){
-        Semestre newSemestre = semestreService.createSemestre(semestre);
+    public ResponseEntity<SemestreResponseDTO> createSemestre(@Valid @RequestBody SemestreRequestDTO request) {
+        SemestreResponseDTO newSemestre = semestreService.createSemestre(request);
         return new ResponseEntity<>(newSemestre, HttpStatus.CREATED);
     }
 
-    // Endpoint para obtener la lista de semestres
     @GetMapping("/lista")
-    public ResponseEntity<List<Semestre>> getListaSemestres(){
-        List<Semestre> semestreList = semestreService.getSemestres();
+    public ResponseEntity<List<SemestreResponseDTO>> getListaSemestres() {
+        List<SemestreResponseDTO> semestreList = semestreService.getSemestres();
 
-        if(semestreList.isEmpty()){
+        if (semestreList.isEmpty()) {
             return new ResponseEntity<>(semestreList, HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(semestreList, HttpStatus.OK);
         }
     }
 
-    // Endpoint para obtener un semestre por su ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSemestreById(@PathVariable Integer id){
-        Optional<Semestre> optionalSemestre = semestreService.getSemestreById(id);
-
-        return optionalSemestre.map(semestre -> new ResponseEntity<>(semestre, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<SemestreResponseDTO> getSemestreById(@PathVariable Integer id) {
+        SemestreResponseDTO semestre = semestreService.getSemestreById(id);
+        return new ResponseEntity<>(semestre, HttpStatus.OK);
     }
 
-    // Endpoint para actualizar un semestre
-    @PutMapping("/editar/{id}")
-    public ResponseEntity<Semestre> updateSemestre(@PathVariable Integer id, @Valid @RequestBody Semestre updatedSemestre){
-        Optional<Semestre> optionalSemestre = semestreService.getSemestreById(id);
+    @GetMapping("/buscar/{nombre}")
+    public ResponseEntity<List<SemestreResponseDTO>> getSemestresByNombre(@PathVariable String nombre) {
+        List<SemestreResponseDTO> semestreList = semestreService.getSemestresByNombre(nombre);
 
-        return optionalSemestre
-                .map(semestre -> new ResponseEntity<>(semestreService.updateSemestre(semestre, updatedSemestre), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    // Endpoint para eliminar un semestre
-    @DeleteMapping("/remover/{id}")
-    public ResponseEntity<Semestre> deleteSemestre(@PathVariable Integer id){
-        Optional<Semestre> optionalSemestre = semestreService.getSemestreById(id);
-
-        if(optionalSemestre.isPresent()){
-            semestreService.deleteSemestre(optionalSemestre.get());
-            return new ResponseEntity<>(HttpStatus.OK);
+        if (semestreList.isEmpty()) {
+            return new ResponseEntity<>(semestreList, HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(semestreList, HttpStatus.OK);
         }
+    }
+
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<SemestreResponseDTO> updateSemestre(@PathVariable Integer id, @Valid @RequestBody SemestreRequestDTO request) {
+        SemestreResponseDTO updatedSemestre = semestreService.updateSemestre(id, request);
+        return new ResponseEntity<>(updatedSemestre, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/remover/{id}")
+    public ResponseEntity<Void> deleteSemestre(@PathVariable Integer id) {
+        semestreService.deleteSemestre(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
