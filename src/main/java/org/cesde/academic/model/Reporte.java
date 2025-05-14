@@ -5,18 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.EstadoReporte;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reporte")
 public class Reporte {
-
-    public enum Estado {
-        PENDIENTE, EN_PROGRESO, COMPLETADO, CANCELADO, ARCHIVADO, APROBADO, RECHAZADO
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,13 +38,13 @@ public class Reporte {
 
     @NotNull(message = "La fecha no puede ser nula")
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @NotNull(message = "El estado no puede ser nulo")
     @Size(max = 50)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Estado estado = Estado.PENDIENTE;
+    private EstadoReporte estado;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -92,19 +90,19 @@ public class Reporte {
         this.descripcion = descripcion;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
-    public Estado getEstado() {
+    public EstadoReporte getEstado() {
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoReporte estado) {
         this.estado = estado;
     }
 

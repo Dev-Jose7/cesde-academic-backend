@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class UsuarioResponseDTO {
 
     private final Integer id;
+    private final String cedula;
     private final String nombre;
     private final TipoUsuario tipo;
     private final EstadoUsuario estado;

@@ -1,10 +1,10 @@
 package org.cesde.academic.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.cesde.academic.enums.EstadoAsistencia;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -18,8 +18,8 @@ public class AsistenciaRequestDTO {
     private Integer estudianteId;
 
     @NotNull(message = "La fecha es obligatoria")
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @NotNull(message = "El estado es obligatorio")
-    private String estado;
+    private EstadoAsistencia estado;
 }
