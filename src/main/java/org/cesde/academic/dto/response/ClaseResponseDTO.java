@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 public class ClaseResponseDTO {
 
     private final Integer id;
-    private final Integer grupoId;
-    private final Integer docenteId;
-    private final Integer moduloId;
+    private final String grupo;
+    private final String docente;
+    private final String modulo;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;
 }

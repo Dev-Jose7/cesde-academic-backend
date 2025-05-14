@@ -1,7 +1,11 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.AsistenciaRequestDTO;
+import org.cesde.academic.dto.response.AsistenciaResponseDTO;
+import org.cesde.academic.dto.response.ClaseResponseInfoDTO;
+import org.cesde.academic.enums.EstadoAsistencia;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
-import org.cesde.academic.exception.TipoIncorrectoException;
+import org.cesde.academic.model.Actividad;
 import org.cesde.academic.model.Asistencia;
 import org.cesde.academic.model.Clase;
 import org.cesde.academic.model.Usuario;
@@ -12,8 +16,11 @@ import org.cesde.academic.service.IAsistenciaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AsistenciaServiceImpl implements IAsistenciaService {
@@ -28,62 +35,110 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Asistencia createAsistencia(Asistencia asistencia) {
-        Clase clase = claseRepository.findById(asistencia.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
-
-        Usuario usuario = usuarioRepository.findById(asistencia.getEstudiante().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
-
-        if(!asistencia.getEstudiante().getTipo().equals(Usuario.Tipo.ESTUDIANTE)){
-            throw new TipoIncorrectoException("El usuario debe ser un estudiante");
-        }
-
-        asistencia.setClase(clase);
-        asistencia.setEstudiante(usuario);
-        return asistenciaRepository.save(asistencia);
+    public AsistenciaResponseDTO createAsistencia(AsistenciaRequestDTO request) {
+        Asistencia asistencia = createEntity(request);
+        return createResponse(asistenciaRepository.save(asistencia));
     }
 
     @Override
-    public List<Asistencia> getAsistencias() {
-        return asistenciaRepository.findAll();
+    public List<AsistenciaResponseDTO> getAsistencias() {
+        return createResponseList(asistenciaRepository.findAll());
     }
 
     @Override
-    public Optional<Asistencia> getAsistenciaById(Integer id) {
-        return asistenciaRepository.findById(id);
+    public AsistenciaResponseDTO getAsistenciaById(Integer id) {
+        return createResponse(getAsistenciaByIdOrException(id));
     }
 
     @Override
-    public List<Asistencia> getAsistenciasByClaseId(Integer claseId) {
-        return asistenciaRepository.findByClase_Id(claseId);
+    public List<AsistenciaResponseDTO> getAsistenciasByClaseId(Integer claseId) {
+        return createResponseList(asistenciaRepository.findAllByClaseId(claseId));
     }
 
     @Override
-    public List<Asistencia> getAsistenciasByEstudianteId(Integer estudianteId) {
-        return asistenciaRepository.findByEstudiante_Id(estudianteId);
+    public List<AsistenciaResponseDTO> getAsistenciasByEstudianteId(Integer estudianteId) {
+        return createResponseList(asistenciaRepository.findAllByEstudianteId(estudianteId));
     }
 
     @Override
-    public Asistencia updateAsistencia(Asistencia asistencia, Asistencia asistenciaUpdated) {
-        Clase clase = claseRepository.findById(asistenciaUpdated.getClase().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no existente"));
-
-        Usuario usuario = usuarioRepository.findById(asistenciaUpdated.getEstudiante().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
-
-        if(!asistenciaUpdated.getEstudiante().getTipo().equals(Usuario.Tipo.ESTUDIANTE)){
-            throw new TipoIncorrectoException("El usuario debe ser un estudiante");
-        }
-
-        asistenciaUpdated.setId(asistencia.getId());
-        asistenciaUpdated.setClase(clase);
-        asistenciaUpdated.setEstudiante(usuario);
-        return asistenciaRepository.save(asistenciaUpdated); // Esto hará un UPDATE y no un INSERT
+    public List<AsistenciaResponseDTO> getAsistenciasByFechaRange(LocalDate desde, LocalDate hasta) {
+        return createResponseList(asistenciaRepository.findAllByFechaBetween(desde, hasta));
     }
 
     @Override
-    public void deleteAsistencia(Asistencia asistencia) {
+    public List<AsistenciaResponseDTO> getAsistenciasByEstado(EstadoAsistencia estado) {
+        return createResponseList(asistenciaRepository.findAllByEstado(estado));
+    }
+
+    @Override
+    public AsistenciaResponseDTO updateAsistencia(Integer id, AsistenciaRequestDTO request) {
+        Asistencia original = getAsistenciaByIdOrException(id);
+        Asistencia updated = createEntity(request);
+        updated.setId(original.getId());
+        updated.setCreado(original.getCreado());
+        return createResponse(asistenciaRepository.save(updated));
+    }
+
+    @Override
+    public void deleteAsistencia(Integer id) {
+        Asistencia asistencia = getAsistenciaByIdOrException(id);
         asistenciaRepository.delete(asistencia);
+    }
+
+    // Auxiliares
+
+    private Asistencia getAsistenciaByIdOrException(Integer id) {
+        return asistenciaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Asistencia no encontrada"));
+    }
+
+    private Clase getClaseByIdOrException(Integer id){
+         return claseRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no encontrada"));
+    }
+
+    private Usuario getEstudianteByIdOrException(Integer id){
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Estudiante no encontrado"));
+    }
+
+    private Asistencia createEntity(AsistenciaRequestDTO request) {
+        Clase clase = getClaseByIdOrException(request.getClaseId());
+        Usuario estudiante = getEstudianteByIdOrException(request.getEstudianteId());
+
+        Asistencia asistencia = new Asistencia();
+        asistencia.setClase(clase);
+        asistencia.setEstudiante(estudiante);
+        asistencia.setFecha(request.getFecha());
+        asistencia.setEstado(request.getEstado());
+        return asistencia;
+    }
+
+    private AsistenciaResponseDTO createResponse(Asistencia asistencia) {
+        return new AsistenciaResponseDTO(
+                asistencia.getId(),
+                createClaseInfo(asistencia),
+                asistencia.getEstudiante().getNombre(),
+                asistencia.getFecha(),
+                asistencia.getEstado(),
+                asistencia.getCreado(),
+                asistencia.getActualizado()
+        );
+    }
+
+    private List<AsistenciaResponseDTO> createResponseList(List<Asistencia> asistencias) {
+        List<AsistenciaResponseDTO> list = new ArrayList<>();
+        for (Asistencia asistencia : asistencias) {
+            list.add(createResponse(asistencia));
+        }
+        return list;
+    }
+
+    private ClaseResponseInfoDTO createClaseInfo(Asistencia asistencia){
+        return new ClaseResponseInfoDTO(
+                asistencia.getClase().getGrupo().getCodigo(),
+                asistencia.getClase().getDocente().getNombre(),
+                asistencia.getClase().getModulo().getNombre()
+        );
     }
 }

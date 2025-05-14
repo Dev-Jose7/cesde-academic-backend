@@ -8,10 +8,18 @@ import java.util.List;
 
 @Repository
 public interface HorarioRepository extends JpaRepository<Horario, Integer> {
-    List<Horario> findByDia_Id(Integer diaId);
-    List<Horario> findByfranjaHoraria_Id(Integer franjaId);
+    // Consulta para validación
+    boolean existsByDiaIdAndFranjaHorariaId(Integer diaId, Integer franjaHorariaId); // Para creación
+    boolean existsByDiaIdAndFranjaHorariaIdAndIdNot(Integer diaId, Integer franjaHorariaId, Integer id); // Para actualización
+    // IdNot permite excluir de la verificación el registro encontrado con el diaId y franjaHorariaId proporcionado
+    // siempre y cuando el ID entregado como parametro sea igual al ID del registro encontrado, permitiendo así
+    // actualizar un registro cuando no se desea editar el dia y franja de este.
+
+    // Consultar registros a través de campos foráneos
+    List<Horario> findAllByDiaId(Integer diaId);
+    List<Horario> findAllByFranjaHorariaId(Integer franjaId);
 
     //findBy: inicia una consulta basada en nombres de propiedades.
-    //Franja: es el nombre del atributo en la entidad Horario que representa una relación @ManyToOne con FranjaHoraria.
-    //_Id: accede a la propiedad id de esa entidad relacionada (FranjaHoraria).
+    //FranjaHorariaId: es el nombre del atributo en la entidad Horario que representa una relación @ManyToOne con FranjaHoraria.
+    //Id: accede a la propiedad id de esa entidad relacionada (FranjaHoraria).
 }

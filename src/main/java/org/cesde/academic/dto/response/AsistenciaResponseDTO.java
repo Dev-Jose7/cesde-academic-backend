@@ -1,8 +1,11 @@
 package org.cesde.academic.dto.response;
 
 import lombok.*;
+import org.cesde.academic.enums.EstadoAsistencia;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @AllArgsConstructor
 @Getter
@@ -10,10 +13,10 @@ import java.time.LocalDateTime;
 public class AsistenciaResponseDTO {
 
     private final Integer id;
-    private final Integer claseId;
-    private final Integer estudianteId;
-    private final LocalDateTime fecha;
-    private final String estado;
+    private final ClaseResponseInfoDTO clase;
+    private final String estudiante;
+    private final LocalDate fecha;
+    private final EstadoAsistencia estado;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;
 }

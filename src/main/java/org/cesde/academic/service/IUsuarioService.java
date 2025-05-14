@@ -1,16 +1,17 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Usuario;
+import org.cesde.academic.dto.request.UsuarioRequestDTO;
+import org.cesde.academic.dto.response.UsuarioResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IUsuarioService {
-
-    Usuario createUsuario(Usuario usuario);
-    List<Usuario> getUsuarios();
-    Optional<Usuario> getUsuarioById(Integer id);
-    Optional<Usuario> getUsuarioByCorreo(String correo);
-    Usuario updateUsuario(Usuario usuario, Usuario usuarioUpdated);
-    void deleteUsuario(Usuario usuario);
+    UsuarioResponseDTO createUsuario(UsuarioRequestDTO request);
+    List<UsuarioResponseDTO> getUsuarios();
+    UsuarioResponseDTO getUsuarioById(Integer id);
+    List<UsuarioResponseDTO> getUsuarioByNombre(String nombre);
+    List<UsuarioResponseDTO> getUsuarioByCedula(String cedula);
+    List<UsuarioResponseDTO> getUsuarioByCorreo(String correo);
+    UsuarioResponseDTO updateUsuario(Integer id, UsuarioRequestDTO request);
+    void deleteUsuario(Integer id);
 }

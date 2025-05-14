@@ -4,15 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
 public class ArchivoRequestDTO {
-
-    @NotNull(message = "El ID de la clase es obligatorio")
-    private Integer claseId;
 
     @NotNull(message = "El ID del usuario es obligatorio")
     private Integer usuarioId;
@@ -24,5 +22,5 @@ public class ArchivoRequestDTO {
     private String rutaArchivo;
 
     @NotNull(message = "La fecha de subida es obligatoria")
-    private LocalDateTime fechaSubida;
+    private LocalDate fechaSubida;
 }

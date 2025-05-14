@@ -1,18 +1,25 @@
 package org.cesde.academic.service.impl;
 
-import ch.qos.logback.core.model.ModelUtil;
+import org.cesde.academic.dto.request.ClaseRequestDTO;
+import org.cesde.academic.dto.response.ClaseResponseDTO;
+import org.cesde.academic.enums.TipoUsuario;
+import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
+import org.cesde.academic.exception.TipoIncorrectoException;
 import org.cesde.academic.model.Clase;
 import org.cesde.academic.model.Grupo;
 import org.cesde.academic.model.Modulo;
 import org.cesde.academic.model.Usuario;
-import org.cesde.academic.repository.*;
+import org.cesde.academic.repository.ClaseRepository;
+import org.cesde.academic.repository.GrupoRepository;
+import org.cesde.academic.repository.ModuloRepository;
+import org.cesde.academic.repository.UsuarioRepository;
 import org.cesde.academic.service.IClaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClaseServiceImpl implements IClaseService {
@@ -30,67 +37,113 @@ public class ClaseServiceImpl implements IClaseService {
     private ModuloRepository moduloRepository;
 
     @Override
-    public Clase createClase(Clase clase) {
-        Grupo grupo = grupoRepository.findById(clase.getGrupo().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Grupo no existente"));
-
-        Usuario usuario = usuarioRepository.findById(clase.getDocente().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
-
-        Modulo modulo = moduloRepository.findById(clase.getModulo().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Modulo no existente"));
-
-        clase.setGrupo(grupo);
-        clase.setDocente(usuario);
-        clase.setModulo(modulo);
-        return claseRepository.save(clase);
+    public ClaseResponseDTO createClase(ClaseRequestDTO request) {
+        Clase clase = createEntity(request);
+        return createResponse(claseRepository.save(clase));
     }
 
     @Override
-    public List<Clase> getClases() {
-        return claseRepository.findAll();
+    public List<ClaseResponseDTO> getClases() {
+        return createResponseList(claseRepository.findAll());
     }
 
     @Override
-    public Optional<Clase> getClaseById(Integer id) {
-        return claseRepository.findById(id);
+    public ClaseResponseDTO getClaseById(Integer id) {
+        return createResponse(getClaseByIdOrException(id));
     }
 
     @Override
-    public List<Clase> getClasesByGrupoId(Integer grupoId) {
-        return claseRepository.findByGrupo_Id(grupoId);
+    public List<ClaseResponseDTO> getClasesByGrupo(Integer grupoId) {
+        return createResponseList(claseRepository.findAllByGrupoId(grupoId));
     }
 
     @Override
-    public List<Clase> getClasesByDocenteId(Integer docenteId) {
-        return claseRepository.findByDocente_Id(docenteId);
+    public List<ClaseResponseDTO> getClasesByDocente(Integer docenteId) {
+        return createResponseList(claseRepository.findAllByDocenteId(docenteId));
     }
 
     @Override
-    public List<Clase> getClasesByModuloId(Integer moduloId) {
-        return claseRepository.findByModulo_Id(moduloId);
+    public List<ClaseResponseDTO> getClasesByModulo(Integer moduloId) {
+        return createResponseList(claseRepository.findAllByModuloId(moduloId));
     }
 
     @Override
-    public Clase updateClase(Clase clase, Clase claseUpdated) {
-        Grupo grupo = grupoRepository.findById(claseUpdated.getGrupo().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Grupo no existente"));
+    public ClaseResponseDTO updateClase(Integer id, ClaseRequestDTO request) {
+        Clase oldClase = getClaseByIdOrException(id);
 
-        Usuario usuario = usuarioRepository.findById(claseUpdated.getDocente().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no existente"));
+        Clase updated = createEntity(request);
+        updated.setId(oldClase.getId());
+        updated.setCreado(oldClase.getCreado());
 
-        Modulo modulo = moduloRepository.findById(claseUpdated.getDocente().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Modulo no existente"));
-
-        claseUpdated.setId(clase.getId());
-        claseUpdated.setGrupo(grupo);
-        claseUpdated.setDocente(usuario);
-        claseUpdated.setModulo(modulo);
-        return claseRepository.save(claseUpdated);
+        return createResponse(claseRepository.save(updated));
     }
 
     @Override
-    public void deleteClase(Clase clase) {
+    public void deleteClase(Integer id) {
+        Clase clase = getClaseByIdOrException(id);
         claseRepository.delete(clase);
+    }
+
+    // ---------- Métodos Auxiliares ----------
+
+    private Clase getClaseByIdOrException(Integer id) {
+        return claseRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Clase no encontrada"));
+    }
+
+    private Grupo getGrupoOrException(Integer grupoId) {
+        return grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Grupo no encontrado"));
+    }
+
+    private Usuario getDocenteOrException(Integer docenteId) {
+        Usuario usuario = usuarioRepository.findById(docenteId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Docente no encontrado"));
+
+        if(!usuario.getTipo().equals(TipoUsuario.DOCENTE)){
+            throw new TipoIncorrectoException("El usuario debe ser un docente");
+        }
+
+        return usuario;
+    }
+
+    private Modulo getModuloOrException(Integer moduloId) {
+        return moduloRepository.findById(moduloId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Módulo no encontrado"));
+    }
+
+    private void ValidateGrupoAndDocenteAndModulo(Integer grupoId, Integer docenteId, Integer moduloId){
+        if(claseRepository.existsByGrupoIdAndDocenteIdAndModuloId(grupoId, docenteId, moduloId)){
+            throw new RecursoExistenteException("Ya existe una clase registrada bajo los datos indicados");
+        }
+    }
+
+    private Clase createEntity(ClaseRequestDTO request) {
+        ValidateGrupoAndDocenteAndModulo(request.getGrupoId(), request.getDocenteId(), request.getModuloId());
+
+        Clase clase = new Clase();
+        clase.setGrupo(getGrupoOrException(request.getGrupoId()));
+        clase.setDocente(getDocenteOrException(request.getDocenteId()));
+        clase.setModulo(getModuloOrException(request.getModuloId()));
+        return clase;
+    }
+
+    private ClaseResponseDTO createResponse(Clase clase) {
+        return new ClaseResponseDTO(
+                clase.getId(),
+                clase.getGrupo().getCodigo(),
+                clase.getDocente().getNombre(),
+                clase.getModulo().getNombre(),
+                clase.getCreado(),
+                clase.getActualizado()
+        );
+    }
+
+    private List<ClaseResponseDTO> createResponseList(List<Clase> clases) {
+        List<ClaseResponseDTO> responseList = new ArrayList<>();
+        for (Clase clase : clases) {
+            responseList.add(createResponse(clase));
+        }
+        return responseList;
     }
 }

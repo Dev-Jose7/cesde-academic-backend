@@ -1,16 +1,18 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Anuncio;
+import org.cesde.academic.dto.request.AnuncioRequestDTO;
+import org.cesde.academic.dto.response.AnuncioResponseDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface IAnuncioService {
-
-    Anuncio createAnuncio(Anuncio anuncio);
-    List<Anuncio> getAnuncios();
-    Optional<Anuncio> getAnuncioById(Integer id);
-    List<Anuncio> getAnunciosByClaseId(Integer claseId);
-    Anuncio updateAnuncio(Anuncio anuncio, Anuncio anuncioUpdated);
-    void deleteAnuncio(Anuncio anuncio);
+    AnuncioResponseDTO createAnuncio(AnuncioRequestDTO request);
+    List<AnuncioResponseDTO> getAnuncios();
+    AnuncioResponseDTO getAnuncioById(Integer id);
+    List<AnuncioResponseDTO> getAnunciosByClaseId(Integer claseId);
+    List<AnuncioResponseDTO> getAnunciosByTitulo(String titulo);
+    List<AnuncioResponseDTO> getAnunciosByFechaRange(LocalDateTime desde, LocalDateTime hasta);
+    AnuncioResponseDTO updateAnuncio(Integer id, AnuncioRequestDTO request);
+    void deleteAnuncio(Integer id);
 }

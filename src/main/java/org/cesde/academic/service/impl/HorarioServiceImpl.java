@@ -1,5 +1,8 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.HorarioRequestDTO;
+import org.cesde.academic.dto.response.HorarioResponseDTO;
+import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Dia;
 import org.cesde.academic.model.FranjaHoraria;
@@ -11,8 +14,8 @@ import org.cesde.academic.service.IHorarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class HorarioServiceImpl implements IHorarioService {
@@ -27,54 +30,98 @@ public class HorarioServiceImpl implements IHorarioService {
     private FranjaHorariaRepository franjaHorariaRepository;
 
     @Override
-    public Horario createHorario(Horario horario) {
-        Dia dia = diaRepository.findById(horario.getDia().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Dia no existente"));
-
-        FranjaHoraria franjaHoraria = franjaHorariaRepository.findById(horario.getFranjaHoraria().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Franja no existente"));
-
-        horario.setDia(dia);
-        horario.setFranjaHoraria(franjaHoraria);
-        return horarioRepository.save(horario);
+    public HorarioResponseDTO createHorario(HorarioRequestDTO request) {
+        Horario horario = createEntity(request, null);
+        return createResponse(horarioRepository.save(horario));
     }
 
     @Override
-    public List<Horario> getHorarios() {
-        return horarioRepository.findAll();
+    public HorarioResponseDTO getHorarioById(Integer id) {
+        return createResponse(getHorarioByIdOrException(id));
     }
 
     @Override
-    public Optional<Horario> getHorarioById(Integer id) {
-        return horarioRepository.findById(id);
+    public List<HorarioResponseDTO> getHorarios() {
+        return createResponseList(horarioRepository.findAll());
     }
 
     @Override
-    public List<Horario> getHorariosByDiaId(Integer diaId) {
-        return horarioRepository.findByDia_Id(diaId);
+    public List<HorarioResponseDTO> getHorariosByDiaId(Integer diaId) {
+        return createResponseList(horarioRepository.findAllByDiaId(diaId));
     }
 
     @Override
-    public List<Horario> getHorariosByFranjaId(Integer franjaId) {
-        return horarioRepository.findByfranjaHoraria_Id(franjaId);
+    public List<HorarioResponseDTO> getHorariosByFranjaHorariaId(Integer franjaId) {
+        return createResponseList(horarioRepository.findAllByFranjaHorariaId(franjaId));
     }
 
     @Override
-    public Horario updateHorario(Horario horario, Horario horarioUpdated) {
-        Dia dia = diaRepository.findById(horarioUpdated.getDia().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Dia no existente"));
-
-        FranjaHoraria franjaHoraria = franjaHorariaRepository.findById(horarioUpdated.getFranjaHoraria().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Franja no existente"));
-
-        horarioUpdated.setId(horario.getId());
-        horarioUpdated.setDia(dia);
-        horarioUpdated.setFranjaHoraria(franjaHoraria);
-        return horarioRepository.save(horarioUpdated); // Esto hará un UPDATE
+    public HorarioResponseDTO updateHorario(Integer id, HorarioRequestDTO request) {
+        Horario actualizado = createEntity(request, id);
+        getHorarioByIdOrException(id);
+        validateUniqueDiaFranja(request, id);
+        actualizado.setId(id);
+        return createResponse(horarioRepository.save(actualizado));
     }
 
     @Override
-    public void deleteHorario(Horario horario) {
+    public void deleteHorario(Integer id) {
+        Horario horario = getHorarioByIdOrException(id);
         horarioRepository.delete(horario);
+    }
+
+    // Métodos auxiliares
+    private Horario getHorarioByIdOrException(Integer id) {
+        return horarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Horario no encontrado"));
+    }
+
+    private Dia getDiaByIdOrException(Integer id) {
+        return diaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Día no encontrado"));
+    }
+
+    private FranjaHoraria getFranjaHorariaByIdOrException(Integer id) {
+        return franjaHorariaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Franja horaria no encontrada"));
+    }
+
+    private Horario createEntity(HorarioRequestDTO request, Integer id) {
+        validateUniqueDiaFranja(request, id);
+
+        Dia dia = getDiaByIdOrException(request.getDiaId());
+        FranjaHoraria franja = getFranjaHorariaByIdOrException(request.getFranjaId());
+
+        Horario horario = new Horario();
+        horario.setDia(dia);
+        horario.setFranjaHoraria(franja);
+        return horario;
+    }
+
+    private void validateUniqueDiaFranja(HorarioRequestDTO request, Integer id) {
+        boolean existe = (id == null)
+                ? horarioRepository.existsByDiaIdAndFranjaHorariaId(request.getDiaId(), request.getFranjaId())
+                : horarioRepository.existsByDiaIdAndFranjaHorariaIdAndIdNot(request.getDiaId(), request.getFranjaId(), id);
+
+        if (existe) {
+            throw new RecursoExistenteException("Ya existe un horario con ese día y franja horaria.");
+        }
+    }
+
+    private HorarioResponseDTO createResponse(Horario horario) {
+        return new HorarioResponseDTO(
+                horario.getId(),
+                horario.getDia().getNombre(),
+                horario.getFranjaHoraria().getHoraInicio(),
+                horario.getFranjaHoraria().getHoraFin()
+        );
+    }
+
+    private List<HorarioResponseDTO> createResponseList(List<Horario> lista) {
+        List<HorarioResponseDTO> respuesta = new ArrayList<>();
+        for (Horario horario : lista) {
+            respuesta.add(createResponse(horario));
+        }
+        return respuesta;
     }
 }

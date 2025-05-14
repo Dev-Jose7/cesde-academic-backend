@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,11 +19,6 @@ public class Archivo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
-
-    // Relación con la entidad Clase
-    @ManyToOne
-    @JoinColumn(name = "clase_id", nullable = false)
-    private Clase clase;
 
     // Relación con la entidad Usuario
     @ManyToOne
@@ -39,7 +35,7 @@ public class Archivo {
 
     @NotNull(message = "La fecha de subida es obligatoria")
     @Column(name = "fecha_subida", nullable = false)
-    private LocalDateTime fechaSubida;
+    private LocalDate fechaSubida;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -59,14 +55,6 @@ public class Archivo {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Clase getClase() {
-        return clase;
-    }
-
-    public void setClase(Clase clase) {
-        this.clase = clase;
     }
 
     public Usuario getUsuario() {
@@ -93,11 +81,11 @@ public class Archivo {
         this.rutaArchivo = rutaArchivo;
     }
 
-    public LocalDateTime getFechaSubida() {
+    public LocalDate getFechaSubida() {
         return fechaSubida;
     }
 
-    public void setFechaSubida(LocalDateTime fechaSubida) {
+    public void setFechaSubida(LocalDate fechaSubida) {
         this.fechaSubida = fechaSubida;
     }
 
@@ -121,7 +109,6 @@ public class Archivo {
     public String toString() {
         return "Archivo{" +
                 "id=" + id +
-                ", clase=" + clase +
                 ", usuario=" + usuario +
                 ", nombreArchivo='" + nombreArchivo + '\'' +
                 ", rutaArchivo='" + rutaArchivo + '\'' +

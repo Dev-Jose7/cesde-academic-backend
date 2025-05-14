@@ -1,17 +1,16 @@
 package org.cesde.academic.service;
 
-import org.cesde.academic.model.Horario;
+import org.cesde.academic.dto.request.HorarioRequestDTO;
+import org.cesde.academic.dto.response.HorarioResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IHorarioService {
-
-    Horario createHorario(Horario horario);
-    List<Horario> getHorarios();
-    Optional<Horario> getHorarioById(Integer id);
-    List<Horario> getHorariosByDiaId(Integer diaId);
-    List<Horario> getHorariosByFranjaId(Integer franjaId);
-    Horario updateHorario(Horario horario, Horario horarioUpdated);
-    void deleteHorario(Horario horario);
+    HorarioResponseDTO createHorario(HorarioRequestDTO request);
+    HorarioResponseDTO getHorarioById(Integer id);
+    List<HorarioResponseDTO> getHorarios();
+    List<HorarioResponseDTO> getHorariosByDiaId(Integer diaId);
+    List<HorarioResponseDTO> getHorariosByFranjaHorariaId(Integer franjaId);
+    HorarioResponseDTO updateHorario(Integer id, HorarioRequestDTO request);
+    void deleteHorario(Integer id);
 }

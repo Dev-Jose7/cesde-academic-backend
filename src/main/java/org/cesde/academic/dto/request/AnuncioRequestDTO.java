@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,5 +22,5 @@ public class AnuncioRequestDTO {
     private String mensaje;
 
     @NotNull(message = "La fecha es obligatoria")
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 }

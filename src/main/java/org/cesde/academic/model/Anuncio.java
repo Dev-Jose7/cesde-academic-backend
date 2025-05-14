@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,7 +36,7 @@ public class Anuncio {
 
     @NotNull(message = "La fecha no puede ser nula")
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -81,11 +82,11 @@ public class Anuncio {
         this.mensaje = mensaje;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

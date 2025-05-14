@@ -8,6 +8,12 @@ import java.util.List;
 
 @Repository
 public interface GrupoRepository extends JpaRepository<Grupo, Integer> {
-    List<Grupo> findByPrograma_Id(Integer programaId);
-    List<Grupo> findBySemestre_Id(Integer semestreId);
+    List<Grupo> findAllByProgramaIdAndSemestreId(Integer programaId, Integer semestreId);
+    List<Grupo> findAllByProgramaId(Integer programaId);
+    List<Grupo> findAllBySemestreId(Integer semestreId);
+    List<Grupo> findByCodigoContainingIgnoreCase(String codigo);
+    boolean existsByCodigoIgnoreCase(String codigo);
+    boolean existsByCodigoIgnoreCaseAndIdNot(String codigo, Integer id);
+    Grupo findByCodigo(String codigo);
+
 }

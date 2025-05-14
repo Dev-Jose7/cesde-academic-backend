@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.cesde.academic.enums.EstadoAsistencia;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "asistencia")
 public class Asistencia {
-
-    public enum Estado { ASISTIO, INASISTENCIA, JUSTIFICADO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class Asistencia {
 
     @NotNull(message = "La fecha no puede ser nula")
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @NotNull(message = "El estado no puede ser nulo")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Estado estado;
+    private EstadoAsistencia estado;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -77,19 +77,19 @@ public class Asistencia {
         this.estudiante = estudiante;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
-    public Estado getEstado() {
+    public EstadoAsistencia getEstado() {
         return estado;
     }
 
-    public void setEstado(Estado estado) {
+    public void setEstado(EstadoAsistencia estado) {
         this.estado = estado;
     }
 

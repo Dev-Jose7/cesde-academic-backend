@@ -1,5 +1,7 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.ModuloRequestDTO;
+import org.cesde.academic.dto.response.ModuloResponseDTO;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Modulo;
 import org.cesde.academic.model.Programa;
@@ -9,8 +11,8 @@ import org.cesde.academic.service.IModuloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ModuloServiceImpl implements IModuloService {
@@ -22,46 +24,105 @@ public class ModuloServiceImpl implements IModuloService {
     private ProgramaRepository programaRepository;
 
     @Override
-    public Modulo createModulo(Modulo modulo) {
-        Programa programa = programaRepository.findById(modulo.getPrograma().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
+    public ModuloResponseDTO createModulo(ModuloRequestDTO request) {
+        validateNombreUnique(request.getNombre(), null);
+        Programa programa = getProgramaByIdOrException(request.getProgramaId());
 
+        Modulo modulo = createEntity(request);
         modulo.setPrograma(programa);
-        return moduloRepository.save(modulo);
+
+        return createResponse(moduloRepository.save(modulo));
     }
 
     @Override
-    public List<Modulo> getModulos() {
-        return moduloRepository.findAll();
+    public List<ModuloResponseDTO> getModulos() {
+        List<Modulo> modulos = moduloRepository.findAll();
+        return createResponseList(modulos);
     }
 
     @Override
-    public Optional<Modulo> getModuloById(Integer id) {
-        return moduloRepository.findById(id);
+    public ModuloResponseDTO getModuloById(Integer id) {
+        Modulo modulo = getModuloByIdOrException(id);
+        return createResponse(modulo);
     }
 
     @Override
-    public Optional<Modulo> getModuloByNombre(String nombre) {
-        return moduloRepository.findByNombre(nombre);
+    public List<ModuloResponseDTO> getModuloByNombre(String nombre) {
+        List<Modulo> modulos = moduloRepository.findAllByNombreContainingIgnoreCase(nombre);
+        return createResponseList(modulos);
     }
 
     @Override
-    public List<Modulo> getModulosByProgramaId(Integer programaId) {
-        return moduloRepository.findByPrograma_Id(programaId);
+    public List<ModuloResponseDTO> getModulosByProgramaId(Integer programaId) {
+        List<Modulo> modulos = moduloRepository.findByPrograma_Id(programaId);
+        return createResponseList(modulos);
     }
 
     @Override
-    public Modulo updateModulo(Modulo modulo, Modulo moduloUpdated) {
-        Programa programa = programaRepository.findById(moduloUpdated.getPrograma().getId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
+    public ModuloResponseDTO updateModulo(Integer id, ModuloRequestDTO request) {
+        Modulo oldModulo = getModuloByIdOrException(id);
+        Programa programa = getProgramaByIdOrException(request.getProgramaId());
+        validateNombreUnique(request.getNombre(), id);
 
-        moduloUpdated.setId(modulo.getId());
-        moduloUpdated.setPrograma(programa);
-        return moduloRepository.save(moduloUpdated);
+        Modulo updatedModulo = createEntity(request);
+        updatedModulo.setId(oldModulo.getId());
+        updatedModulo.setPrograma(programa);
+        updatedModulo.setCreado(oldModulo.getCreado());
+
+        return createResponse(moduloRepository.save(updatedModulo));
     }
 
     @Override
-    public void deleteModulo(Modulo modulo) {
+    public void deleteModulo(Integer id) {
+        Modulo modulo = getModuloByIdOrException(id);
         moduloRepository.delete(modulo);
+    }
+
+    // Métodos auxiliares
+    private Modulo getModuloByIdOrException(Integer id){
+        return moduloRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Módulo no encontrado"));
+    }
+
+    private Programa getProgramaByIdOrException(Integer id){
+        return programaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
+    }
+
+    private void validateNombreUnique(String nombre, Integer id){
+        boolean existe = id == null
+                ? moduloRepository.existsByNombreIgnoreCase(nombre)
+                : moduloRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
+
+        if (existe){
+            throw new RecursoNoEncontradoException("El módulo ya está registrado");
+        }
+    }
+
+    private Modulo createEntity(ModuloRequestDTO request){
+        Modulo modulo = new Modulo();
+        modulo.setNombre(request.getNombre());
+        modulo.setTipo(request.getTipo());
+        modulo.setPrograma(getProgramaByIdOrException(request.getProgramaId()));
+        return modulo;
+    }
+
+    private ModuloResponseDTO createResponse(Modulo modulo){
+        return new ModuloResponseDTO(
+                modulo.getId(),
+                modulo.getPrograma().getId(),
+                modulo.getNombre(),
+                modulo.getTipo(),
+                modulo.getCreado(),
+                modulo.getActualizado()
+        );
+    }
+
+    private List<ModuloResponseDTO> createResponseList(List<Modulo> modulos){
+        List<ModuloResponseDTO> lista = new ArrayList<>();
+        for (Modulo modulo : modulos){
+            lista.add(createResponse(modulo));
+        }
+        return lista;
     }
 }
