@@ -9,6 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface ModuloRepository extends JpaRepository<Modulo, Integer> {
+    boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Integer id);
+    List<Modulo> findAllByNombreContainingIgnoreCase(String nombre);
     List<Modulo> findByPrograma_Id(Integer programaId);
-    Optional<Modulo> findByNombre(String nombre);
 }
