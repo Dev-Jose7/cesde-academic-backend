@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 public class ModuloResponseDTO {
+    private final Integer id;
     private final Integer programaId;
     private final String nombre;
     private final TipoModulo tipo;

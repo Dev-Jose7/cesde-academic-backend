@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.cesde.academic.enums.NombreDia;
 
 @Getter
 @Setter
@@ -11,5 +12,5 @@ import lombok.ToString;
 public class DiaRequestDTO {
 
     @NotNull(message = "El nombre del día es obligatorio")
-    private String nombre;
+    private NombreDia nombre;
 }

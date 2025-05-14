@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class CalificacionRequestDTO {
     private Integer estudianteId;
 
     @NotNull(message = "La fecha es obligatoria")
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @DecimalMin(value = "0.0", inclusive = true, message = "La nota mínima es 0.0")
     @DecimalMax(value = "5.0", inclusive = true, message = "La nota máxima es 5.0")
