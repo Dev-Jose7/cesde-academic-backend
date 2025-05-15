@@ -2,9 +2,11 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.EscuelaRequestDTO;
 import org.cesde.academic.dto.response.EscuelaResponseDTO;
+import org.cesde.academic.dto.response.HorarioResponseDTO;
 import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Escuela;
+import org.cesde.academic.model.Horario;
 import org.cesde.academic.repository.EscuelaRepository;
 import org.cesde.academic.service.IEscuelaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,7 @@ public class EscuelaServiceImpl implements IEscuelaService {
 
     @Override
     public EscuelaResponseDTO createEscuela(EscuelaRequestDTO request) {
-        validateNombreUnique(request.getNombre(), null);
-        Escuela escuela = createEntity(request);
+        Escuela escuela = createEntity(request, null);
         escuelaRepository.save(escuela);
 
         return createResponse(escuela);
@@ -30,13 +31,8 @@ public class EscuelaServiceImpl implements IEscuelaService {
 
     @Override
     public List<EscuelaResponseDTO> getEscuelas() {
-        List<Escuela> escuelaList = escuelaRepository.findAll();
-        List<EscuelaResponseDTO> escuelaResponseDTOList = new ArrayList<>();
-
-        for (Escuela escuela : escuelaList){
-            escuelaResponseDTOList.add(createResponse(escuela));
-        }
-        return escuelaResponseDTOList;
+        List<Escuela> escuelas = escuelaRepository.findAll();
+        return createResponseList(escuelas);
     }
 
     @Override
@@ -46,23 +42,16 @@ public class EscuelaServiceImpl implements IEscuelaService {
     }
 
     @Override
-    public List<EscuelaResponseDTO> getEscuelaByNombre(String nombre) {
+    public List<EscuelaResponseDTO> getEscuelasByNombre(String nombre) {
         List<Escuela> escuelas = escuelaRepository.findAllByNombreContainingIgnoreCase(nombre);
-        List<EscuelaResponseDTO> escuelaList = new ArrayList<>();
-
-        for (Escuela escuela : escuelas){
-            escuelaList.add(createResponse(escuela));
-        }
-
-        return escuelaList;
+        return createResponseList(escuelas);
     }
 
     @Override
     public EscuelaResponseDTO updateEscuela(Integer id, EscuelaRequestDTO request) {
-        validateNombreUnique(request.getNombre(), id);
+        Escuela updatedEscuela = createEntity(request, id); // Se crea una instancia de modelo al objeto actualizado
         Escuela oldEscuela = getEscuelaByIdOrException(id); // Se obtiene registro por la clave primaria
 
-        Escuela updatedEscuela = createEntity(request); // Se crea una instancia de modelo al objeto actualizado
         updatedEscuela.setId(oldEscuela.getId());
         updatedEscuela.setCreado(oldEscuela.getCreado());
 
@@ -92,7 +81,9 @@ public class EscuelaServiceImpl implements IEscuelaService {
     }
 
 
-    private Escuela createEntity(EscuelaRequestDTO request){
+    private Escuela createEntity(EscuelaRequestDTO request, Integer id){
+        validateNombreUnique(request.getNombre(), id);
+
         Escuela escuela = new Escuela();
         escuela.setNombre(request.getNombre());
         return escuela;
@@ -104,5 +95,13 @@ public class EscuelaServiceImpl implements IEscuelaService {
                 escuela.getNombre(),
                 escuela.getCreado(),
                 escuela.getActualizado());
+    }
+
+    private List<EscuelaResponseDTO> createResponseList(List<Escuela> lista) {
+        List<EscuelaResponseDTO> respuesta = new ArrayList<>();
+        for (Escuela escuela : lista) {
+            respuesta.add(createResponse(escuela));
+        }
+        return respuesta;
     }
 }

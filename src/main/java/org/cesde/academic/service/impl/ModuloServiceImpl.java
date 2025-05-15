@@ -25,12 +25,7 @@ public class ModuloServiceImpl implements IModuloService {
 
     @Override
     public ModuloResponseDTO createModulo(ModuloRequestDTO request) {
-        validateNombreUnique(request.getNombre(), null);
-        Programa programa = getProgramaByIdOrException(request.getProgramaId());
-
-        Modulo modulo = createEntity(request);
-        modulo.setPrograma(programa);
-
+        Modulo modulo = createEntity(request, null);
         return createResponse(moduloRepository.save(modulo));
     }
 
@@ -60,13 +55,10 @@ public class ModuloServiceImpl implements IModuloService {
 
     @Override
     public ModuloResponseDTO updateModulo(Integer id, ModuloRequestDTO request) {
+        Modulo updatedModulo = createEntity(request, id);
         Modulo oldModulo = getModuloByIdOrException(id);
-        Programa programa = getProgramaByIdOrException(request.getProgramaId());
-        validateNombreUnique(request.getNombre(), id);
 
-        Modulo updatedModulo = createEntity(request);
         updatedModulo.setId(oldModulo.getId());
-        updatedModulo.setPrograma(programa);
         updatedModulo.setCreado(oldModulo.getCreado());
 
         return createResponse(moduloRepository.save(updatedModulo));
@@ -89,7 +81,7 @@ public class ModuloServiceImpl implements IModuloService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
     }
 
-    private void validateNombreUnique(String nombre, Integer id){
+    private void validateUniqueNombre(String nombre, Integer id){
         boolean existe = id == null
                 ? moduloRepository.existsByNombreIgnoreCase(nombre)
                 : moduloRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
@@ -99,7 +91,9 @@ public class ModuloServiceImpl implements IModuloService {
         }
     }
 
-    private Modulo createEntity(ModuloRequestDTO request){
+    private Modulo createEntity(ModuloRequestDTO request, Integer id){
+        validateUniqueNombre(request.getNombre(), id);
+
         Modulo modulo = new Modulo();
         modulo.setNombre(request.getNombre());
         modulo.setTipo(request.getTipo());
