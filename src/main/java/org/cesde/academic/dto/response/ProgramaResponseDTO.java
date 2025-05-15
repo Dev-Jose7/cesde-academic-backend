@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @ToString
 public class ProgramaResponseDTO {
     private final Integer id;
-    private final Integer escuelaId;
+    private final String escuela;
     private final String nombre;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;
