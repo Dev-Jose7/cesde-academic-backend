@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cesde.academic.enums.NivelModulo;
 import org.cesde.academic.enums.TipoModulo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,8 +15,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "modulo")
 public class Modulo {
-
-//    public enum Tipo { MATERIA, CURSO, CATEDRA, SEMINARIO }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,11 @@ public class Modulo {
     @Enumerated(EnumType.STRING) // Guarda el nombre del valor del enum como una cadena de texto en la base de datos.
     @Column(nullable = false, length = 50)
     private TipoModulo tipo;
+
+    @NotNull(message = "El nivel de módulo no puede ser nulo")
+    @Enumerated(EnumType.STRING) // Guarda el nombre del valor del enum como una cadena de texto en la base de datos.
+    @Column(nullable = false, length = 50)
+    private NivelModulo nivel;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -81,6 +85,14 @@ public class Modulo {
 
     public void setTipo(TipoModulo tipo) {
         this.tipo = tipo;
+    }
+
+    public NivelModulo getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(NivelModulo nivel) {
+        this.nivel = nivel;
     }
 
     public LocalDateTime getCreado() {
