@@ -26,12 +26,12 @@ public class EscuelaController {
 
     @GetMapping("/lista")
     public ResponseEntity<List> getEscuelas(){
-        List<EscuelaResponseDTO> escuelaList = escuelaService.getEscuelas();
+        List<EscuelaResponseDTO> escuelas = escuelaService.getEscuelas();
 
-        if(escuelaList.isEmpty()){
-            return new ResponseEntity<>(escuelaList, HttpStatus.NO_CONTENT);
+        if(escuelas.isEmpty()){
+            return new ResponseEntity<>(escuelas, HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(escuelaList, HttpStatus.OK);
+            return new ResponseEntity<>(escuelas, HttpStatus.OK);
         }
     }
 
@@ -43,7 +43,7 @@ public class EscuelaController {
 
     @GetMapping("/buscar/{nombre}")
     public ResponseEntity<List<EscuelaResponseDTO>> getEscuelaByNombre(@PathVariable String nombre){
-        List<EscuelaResponseDTO> escuelas = escuelaService.getEscuelaByNombre(nombre);
+        List<EscuelaResponseDTO> escuelas = escuelaService.getEscuelasByNombre(nombre);
         return new ResponseEntity<>(escuelas, HttpStatus.OK);
     }
 
