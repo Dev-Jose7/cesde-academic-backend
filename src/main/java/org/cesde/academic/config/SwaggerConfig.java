@@ -30,3 +30,20 @@ public class SwaggerConfig {
                 .servers(List.of(prodServer));
     }
 }
+
+// Swagger (ahora parte del estándar OpenAPI) es un conjunto de herramientas para documentar y consumir
+// APIs RESTful. El componente central es el esquema OpenAPI, que es un documento (JSON o YAML) que describe
+// tu API: rutas, métodos HTTP, parámetros, respuestas, errores, seguridad, etc.
+
+// OpenAPI es un estándar para describir APIs REST. No es un software, sino un formato de especificación,
+// como una receta escrita en JSON o YAML que explica cómo funciona tu API.
+
+// Cuando usas Swagger en un proyecto Java con Spring Boot (con springdoc-openapi), Spring analiza tu
+// código para generar un documento OpenAPI automáticamente. Si no configuras nada se generará un documento
+// OpenApi genérico
+
+// Al configurarlo podemos generar un OpenApi personalizado el cuál nos permite adaptar dicho documento al
+// contexto de la aplicación brindado una documentación y consumos más ordenadas y profesionales. Además con
+// el objeto Server podemos indicarle a Swagger UI desde qué dominio se puede llamar la API, ya que por defecto
+// esta configurada para ser leida en el localhost, en resumen: Tu API está hosteada en un dominio distinto
+// al de la documentación es necesario añadirle un Server.
