@@ -22,10 +22,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO request) {
-        validateUniqueCorreo(request.getCorreo(), null);
-        validateUniqueCedula(request.getCedula(), null);
-
-        Usuario usuario = createEntity(request);
+        Usuario usuario = createEntity(request, null);
         return createResponse(usuarioRepository.save(usuario));
     }
 
@@ -56,12 +53,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public UsuarioResponseDTO updateUsuario(Integer id, UsuarioRequestDTO request) {
+        Usuario updatedUsuario = createEntity(request, id);
         Usuario oldUsuario = getUsuarioByIdOrException(id);
 
-        validateUniqueCorreo(request.getCorreo(), id);
-        validateUniqueCedula(request.getCedula(), id);
-
-        Usuario updatedUsuario = createEntity(request);
         updatedUsuario.setId(oldUsuario.getId());
         updatedUsuario.setCreado(oldUsuario.getCreado());
 
@@ -97,7 +91,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
             throw new RecursoExistenteException("Cédula ya registrada");
     }
 
-    private Usuario createEntity(UsuarioRequestDTO request){
+    private Usuario createEntity(UsuarioRequestDTO request, Integer id){
+        validateUniqueCorreo(request.getCorreo(), id);
+        validateUniqueCedula(request.getCedula(), id);
+
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
         usuario.setCorreo(request.getCorreo());

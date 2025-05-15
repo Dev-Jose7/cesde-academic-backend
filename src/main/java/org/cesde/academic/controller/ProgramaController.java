@@ -3,7 +3,6 @@ package org.cesde.academic.controller;
 import jakarta.validation.Valid;
 import org.cesde.academic.dto.request.ProgramaRequestDTO;
 import org.cesde.academic.dto.response.ProgramaResponseDTO;
-import org.cesde.academic.model.Programa;
 import org.cesde.academic.service.IProgramaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/programa")
@@ -48,7 +46,7 @@ public class ProgramaController {
 
     @GetMapping("/buscar/{nombre}")
     public ResponseEntity<List<ProgramaResponseDTO>> getProgramaByNombre(@PathVariable String nombre){
-        List<ProgramaResponseDTO> programaList = programaService.getProgramaByNombre(nombre);
+        List<ProgramaResponseDTO> programaList = programaService.getProgramasByNombre(nombre);
 
         if(programaList.isEmpty()){
             return new ResponseEntity<>(programaList, HttpStatus.NO_CONTENT);

@@ -21,8 +21,7 @@ public class SemestreServiceImpl implements ISemestreService {
 
     @Override
     public SemestreResponseDTO createSemestre(SemestreRequestDTO request) {
-        validateNombreUnique(request.getNombre(), null);
-        Semestre semestre = createEntity(request);
+        Semestre semestre = createEntity(request, null);
         return createResponse(semestreRepository.save(semestre));
     }
 
@@ -46,10 +45,9 @@ public class SemestreServiceImpl implements ISemestreService {
 
     @Override
     public SemestreResponseDTO updateSemestre(Integer id, SemestreRequestDTO request) {
+        Semestre updatedSemestre = createEntity(request, id);
         Semestre oldSemestre = getSemestreByIdOrException(id);
-        validateNombreUnique(request.getNombre(), id);
 
-        Semestre updatedSemestre = createEntity(request);
         updatedSemestre.setId(oldSemestre.getId());
         updatedSemestre.setCreado(oldSemestre.getCreado());
 
@@ -71,7 +69,7 @@ public class SemestreServiceImpl implements ISemestreService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Semestre no encontrado"));
     }
 
-    private void validateNombreUnique(String nombre, Integer id) {
+    private void validateUniqueNombre(String nombre, Integer id) {
         boolean nombreExiste = id == null
                 ? semestreRepository.existsByNombreIgnoreCase(nombre)
                 : semestreRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
@@ -81,7 +79,9 @@ public class SemestreServiceImpl implements ISemestreService {
         }
     }
 
-    private Semestre createEntity(SemestreRequestDTO request) {
+    private Semestre createEntity(SemestreRequestDTO request, Integer id) {
+        validateUniqueNombre(request.getNombre(), id);
+
         Semestre semestre = new Semestre();
         semestre.setNombre(request.getNombre());
         return semestre;
