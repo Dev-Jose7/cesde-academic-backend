@@ -1,6 +1,7 @@
 package org.cesde.academic.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.cesde.academic.enums.NivelModulo;
 import org.cesde.academic.enums.TipoModulo;
 
 @Getter
@@ -17,4 +18,7 @@ public class ModuloRequestDTO {
 
     @NotNull
     private TipoModulo tipo;
+
+    @NotNull
+    private NivelModulo nivel;
 }
