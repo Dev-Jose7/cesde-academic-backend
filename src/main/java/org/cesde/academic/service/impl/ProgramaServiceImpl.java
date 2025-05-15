@@ -103,7 +103,7 @@ public class ProgramaServiceImpl implements IProgramaService {
     private ProgramaResponseDTO createResponse(Programa programa){
         return new ProgramaResponseDTO(
                 programa.getId(),
-                programa.getEscuela().getId(),
+                programa.getEscuela().getNombre(),
                 programa.getNombre(),
                 programa.getCreado(),
                 programa.getActualizado()
