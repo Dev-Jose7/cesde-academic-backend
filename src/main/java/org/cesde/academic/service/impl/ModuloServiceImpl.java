@@ -107,6 +107,7 @@ public class ModuloServiceImpl implements IModuloService {
                 modulo.getPrograma().getId(),
                 modulo.getNombre(),
                 modulo.getTipo(),
+                modulo.getNivel(),
                 modulo.getCreado(),
                 modulo.getActualizado()
         );
