@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProgramaServiceImpl implements IProgramaService {
@@ -26,11 +25,7 @@ public class ProgramaServiceImpl implements IProgramaService {
 
     @Override
     public ProgramaResponseDTO createPrograma(ProgramaRequestDTO request) {
-        validateNombreUnique(request.getNombre(), null);
-        Escuela escuela = getEscuelaByIdOrException(request.getEscuelaId());
-
-        Programa programa = createEntity(request);
-        programa.setEscuela(escuela);
+        Programa programa = createEntity(request, null);
         return createResponse(programaRepository.save(programa));
     }
 
@@ -47,7 +42,7 @@ public class ProgramaServiceImpl implements IProgramaService {
     }
 
     @Override
-    public List<ProgramaResponseDTO> getProgramaByNombre(String nombre) {
+    public List<ProgramaResponseDTO> getProgramasByNombre(String nombre) {
         List<Programa> programas = programaRepository.findAllByNombreContainingIgnoreCase(nombre);
         return createResponseList(programas);
     }
@@ -60,13 +55,10 @@ public class ProgramaServiceImpl implements IProgramaService {
 
     @Override
     public ProgramaResponseDTO updatePrograma(Integer id, ProgramaRequestDTO request) {
+        Programa updatedPrograma = createEntity(request, id);
         Programa oldPrograma = getProgramaByIdOrException(id);
-        Escuela escuela = getEscuelaByIdOrException(request.getEscuelaId());
-        validateNombreUnique(request.getNombre(), id);
 
-        Programa updatedPrograma = createEntity(request);
         updatedPrograma.setId(oldPrograma.getId());
-        updatedPrograma.setEscuela(escuela);
         updatedPrograma.setCreado(oldPrograma.getCreado());
 
         return createResponse(programaRepository.save(updatedPrograma));
@@ -89,7 +81,7 @@ public class ProgramaServiceImpl implements IProgramaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Escuela no existente"));
     }
 
-    private void validateNombreUnique(String nombre, Integer id){
+    private void validateUniqueNombre(String nombre, Integer id){
         boolean nombreExiste = id == null
                 ? programaRepository.existsByNombreIgnoreCase(nombre)
                 : programaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
@@ -99,7 +91,9 @@ public class ProgramaServiceImpl implements IProgramaService {
         }
     }
 
-    private Programa createEntity(ProgramaRequestDTO request){
+    private Programa createEntity(ProgramaRequestDTO request, Integer id){
+        validateUniqueNombre(request.getNombre(), id);
+
         Programa programa = new Programa();
         programa.setEscuela(getEscuelaByIdOrException(request.getEscuelaId()));
         programa.setNombre(request.getNombre());
@@ -118,11 +112,9 @@ public class ProgramaServiceImpl implements IProgramaService {
 
     private List<ProgramaResponseDTO> createResponseList(List<Programa> programas){
         List<ProgramaResponseDTO> programasResponse = new ArrayList<>();
-
         for (Programa programa : programas){
             programasResponse.add(createResponse(programa));
         }
-
         return programasResponse;
     }
 }
