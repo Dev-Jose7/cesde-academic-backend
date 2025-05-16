@@ -2,6 +2,7 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.ProgramaRequestDTO;
 import org.cesde.academic.dto.response.ProgramaResponseDTO;
+import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Escuela;
 import org.cesde.academic.model.Programa;
@@ -87,7 +88,7 @@ public class ProgramaServiceImpl implements IProgramaService {
                 : programaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
 
         if (nombreExiste){
-            throw new RecursoNoEncontradoException("Este programa ya se encuentra registrado");
+            throw new RecursoExistenteException("Este programa ya se encuentra registrado");
         }
     }
 
