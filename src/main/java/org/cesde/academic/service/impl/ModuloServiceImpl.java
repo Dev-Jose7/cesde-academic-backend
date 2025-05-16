@@ -95,9 +95,10 @@ public class ModuloServiceImpl implements IModuloService {
         validateUniqueNombre(request.getNombre(), id);
 
         Modulo modulo = new Modulo();
+        modulo.setPrograma(getProgramaByIdOrException(request.getProgramaId()));
         modulo.setNombre(request.getNombre());
         modulo.setTipo(request.getTipo());
-        modulo.setPrograma(getProgramaByIdOrException(request.getProgramaId()));
+        modulo.setNivel(request.getNivel());
         return modulo;
     }
 
