@@ -104,7 +104,7 @@ public class ModuloServiceImpl implements IModuloService {
     private ModuloResponseDTO createResponse(Modulo modulo){
         return new ModuloResponseDTO(
                 modulo.getId(),
-                modulo.getPrograma().getId(),
+                modulo.getPrograma().getNombre(),
                 modulo.getNombre(),
                 modulo.getTipo(),
                 modulo.getNivel(),
