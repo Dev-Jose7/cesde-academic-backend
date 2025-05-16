@@ -28,7 +28,7 @@ public class Modulo {
 
     @NotNull(message = "El nombre del módulo no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre del módulo debe tener entre 1 y 255 caracteres")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nombre;
 
     @NotNull(message = "El tipo de módulo no puede ser nulo")
