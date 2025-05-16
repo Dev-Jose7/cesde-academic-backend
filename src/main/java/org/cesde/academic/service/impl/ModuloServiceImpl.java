@@ -2,6 +2,8 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.ModuloRequestDTO;
 import org.cesde.academic.dto.response.ModuloResponseDTO;
+import org.cesde.academic.enums.TipoModulo;
+import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Modulo;
 import org.cesde.academic.model.Programa;
@@ -81,18 +83,26 @@ public class ModuloServiceImpl implements IModuloService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Programa no encontrado"));
     }
 
-    private void validateUniqueNombre(String nombre, Integer id){
-        boolean existe = id == null
+    private void validateUniqueNombre(String nombre, TipoModulo tipo, Integer id){
+        boolean existe;
+
+        if(!tipo.equals(TipoModulo.CATEDRA)){ // Válida que los modúlos no puedan ser creados o actualizados por un nombre ya registrado
+            existe = id == null
                 ? moduloRepository.existsByNombreIgnoreCase(nombre)
                 : moduloRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
+        } else { // Válida que los modúlos de tipo CATEDRA puedan ser creados o actualizados por un nombre ya registrado, (permite duplicados solo para tipo CATEDRA)
+            existe = id == null
+                ? moduloRepository.existsByNombreIgnoreCaseAndTipoNot(nombre, tipo)
+                : moduloRepository.existsByNombreIgnoreCaseAndTipoNotAndIdNot(nombre, tipo, id);
+        }
 
         if (existe){
-            throw new RecursoNoEncontradoException("El módulo ya está registrado");
+            throw new RecursoExistenteException("El módulo ya está registrado");
         }
     }
 
     private Modulo createEntity(ModuloRequestDTO request, Integer id){
-        validateUniqueNombre(request.getNombre(), id);
+        validateUniqueNombre(request.getNombre(), request.getTipo(), id);
 
         Modulo modulo = new Modulo();
         modulo.setPrograma(getProgramaByIdOrException(request.getProgramaId()));
