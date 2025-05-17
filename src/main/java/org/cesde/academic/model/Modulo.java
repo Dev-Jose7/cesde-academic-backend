@@ -21,11 +21,6 @@ public class Modulo {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private Integer id;
 
-    @NotNull(message = "El programa no puede ser nulo")
-    @ManyToOne
-    @JoinColumn(name = "programa_id", nullable = false)
-    private Programa programa;
-
     @NotNull(message = "El nombre del módulo no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre del módulo debe tener entre 1 y 255 caracteres")
     @Column(nullable = false)
@@ -61,14 +56,6 @@ public class Modulo {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Programa getPrograma() {
-        return programa;
-    }
-
-    public void setPrograma(Programa programa) {
-        this.programa = programa;
     }
 
     public String getNombre() {
@@ -115,7 +102,6 @@ public class Modulo {
     public String toString() {
         return "Modulo{" +
                 "id=" + id +
-                ", programa=" + (programa != null ? programa.getId() : null) +
                 ", nombre='" + nombre + '\'' +
                 ", tipo=" + tipo +
                 ", creado=" + creado +

@@ -50,12 +50,6 @@ public class ModuloServiceImpl implements IModuloService {
     }
 
     @Override
-    public List<ModuloResponseDTO> getModulosByProgramaId(Integer programaId) {
-        List<Modulo> modulos = moduloRepository.findByPrograma_Id(programaId);
-        return createResponseList(modulos);
-    }
-
-    @Override
     public ModuloResponseDTO updateModulo(Integer id, ModuloRequestDTO request) {
         Modulo updatedModulo = createEntity(request, id);
         Modulo oldModulo = getModuloByIdOrException(id);
@@ -84,17 +78,9 @@ public class ModuloServiceImpl implements IModuloService {
     }
 
     private void validateUniqueNombre(String nombre, TipoModulo tipo, Integer id){
-        boolean existe;
-
-        if(!tipo.equals(TipoModulo.CATEDRA)){ // Válida que los modúlos no puedan ser creados o actualizados por un nombre ya registrado
-            existe = id == null
+        boolean  existe = id == null
                 ? moduloRepository.existsByNombreIgnoreCase(nombre)
                 : moduloRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
-        } else { // Válida que los modúlos de tipo CATEDRA puedan ser creados o actualizados por un nombre ya registrado, (permite duplicados solo para tipo CATEDRA)
-            existe = id == null
-                ? moduloRepository.existsByNombreIgnoreCaseAndTipoNot(nombre, tipo)
-                : moduloRepository.existsByNombreIgnoreCaseAndTipoNotAndIdNot(nombre, tipo, id);
-        }
 
         if (existe){
             throw new RecursoExistenteException("El módulo ya está registrado");
@@ -105,7 +91,6 @@ public class ModuloServiceImpl implements IModuloService {
         validateUniqueNombre(request.getNombre(), request.getTipo(), id);
 
         Modulo modulo = new Modulo();
-        modulo.setPrograma(getProgramaByIdOrException(request.getProgramaId()));
         modulo.setNombre(request.getNombre());
         modulo.setTipo(request.getTipo());
         modulo.setNivel(request.getNivel());
@@ -115,7 +100,6 @@ public class ModuloServiceImpl implements IModuloService {
     private ModuloResponseDTO createResponse(Modulo modulo){
         return new ModuloResponseDTO(
                 modulo.getId(),
-                modulo.getPrograma().getNombre(),
                 modulo.getNombre(),
                 modulo.getTipo(),
                 modulo.getNivel(),
