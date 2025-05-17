@@ -11,8 +11,6 @@ import java.util.List;
 public interface ModuloRepository extends JpaRepository<Modulo, Integer> {
     boolean existsByNombreIgnoreCase(String nombre);
     boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Integer id);
-    boolean existsByNombreIgnoreCaseAndTipoNot(String nombre, TipoModulo tipo);
-    boolean existsByNombreIgnoreCaseAndTipoNotAndIdNot(String nombre, TipoModulo tipo, Integer id);
     List<Modulo> findAllByNombreContainingIgnoreCase(String nombre);
 }
 
