@@ -93,7 +93,6 @@ public class ModuloServiceImpl implements IModuloService {
         Modulo modulo = new Modulo();
         modulo.setNombre(request.getNombre());
         modulo.setTipo(request.getTipo());
-        modulo.setNivel(request.getNivel());
         return modulo;
     }
 
@@ -102,7 +101,6 @@ public class ModuloServiceImpl implements IModuloService {
                 modulo.getId(),
                 modulo.getNombre(),
                 modulo.getTipo(),
-                modulo.getNivel(),
                 modulo.getCreado(),
                 modulo.getActualizado()
         );
