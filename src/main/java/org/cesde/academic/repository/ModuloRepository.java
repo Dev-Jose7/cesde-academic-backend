@@ -14,7 +14,6 @@ public interface ModuloRepository extends JpaRepository<Modulo, Integer> {
     boolean existsByNombreIgnoreCaseAndTipoNot(String nombre, TipoModulo tipo);
     boolean existsByNombreIgnoreCaseAndTipoNotAndIdNot(String nombre, TipoModulo tipo, Integer id);
     List<Modulo> findAllByNombreContainingIgnoreCase(String nombre);
-    List<Modulo> findByPrograma_Id(Integer programaId);
 }
 
 // Válida si hay un registro que, en la columna nombre tenga como valor el dato proporcionado al
