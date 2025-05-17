@@ -56,18 +56,6 @@ public class ModuloController {
         }
     }
 
-    // Obtener módulos por programa
-    @GetMapping("/programa/{id}")
-    public ResponseEntity<List<ModuloResponseDTO>> getModulosByProgramaId(@PathVariable Integer id) {
-        List<ModuloResponseDTO> moduloList = moduloService.getModulosByProgramaId(id);
-
-        if (moduloList.isEmpty()) {
-            return new ResponseEntity<>(moduloList, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(moduloList, HttpStatus.OK);
-        }
-    }
-
     // Actualizar módulo
     @PutMapping("/editar/{id}")
     public ResponseEntity<ModuloResponseDTO> updateModulo(@PathVariable Integer id, @Valid @RequestBody ModuloRequestDTO request) {
