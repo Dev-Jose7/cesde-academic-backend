@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @ToString
 public class ModuloResponseDTO {
     private final Integer id;
-    private final String programa;
     private final String nombre;
     private final TipoModulo tipo;
     private final NivelModulo nivel;
