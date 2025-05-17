@@ -13,7 +13,6 @@ public interface IModuloService {
     List<ModuloResponseDTO> getModulos();
     ModuloResponseDTO getModuloById(Integer id);
     List<ModuloResponseDTO> getModuloByNombre(String nombre);
-    List<ModuloResponseDTO> getModulosByProgramaId(Integer programaId);
     ModuloResponseDTO updateModulo(Integer id, ModuloRequestDTO request);
     void deleteModulo(Integer id);
     //Los métodos CRUD estándar.
