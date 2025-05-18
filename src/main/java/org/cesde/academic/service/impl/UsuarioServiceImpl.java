@@ -55,7 +55,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public List<UsuarioResponseDTO> getUsuarioByTipo(TipoUsuario tipo) {
-        return createResponseList(usuarioRepository.findAllByTipoContainingIgnoreCase(tipo));
+        return createResponseList(usuarioRepository.findAllByTipo(tipo));
     }
 
     @Override
