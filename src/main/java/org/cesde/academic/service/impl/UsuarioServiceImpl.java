@@ -2,6 +2,7 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.UsuarioRequestDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
+import org.cesde.academic.enums.EstadoUsuario;
 import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Usuario;
@@ -97,11 +98,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
-        usuario.setCorreo(request.getCorreo());
         usuario.setCedula(request.getCedula());
+        usuario.setCorreo(request.getCorreo());
         usuario.setContrasena(request.getContrasena());
         usuario.setTipo(request.getTipo());
-        usuario.setEstado(request.getEstado());
+        usuario.setEstado(request.getEstado() == null ? EstadoUsuario.ACTIVO : request.getEstado());
         return usuario;
     }
 
