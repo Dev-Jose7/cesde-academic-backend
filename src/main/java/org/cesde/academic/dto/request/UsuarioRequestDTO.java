@@ -11,13 +11,13 @@ import org.cesde.academic.enums.TipoUsuario;
 @ToString
 public class UsuarioRequestDTO {
 
-    @NotNull
-    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
-    private String cedula;
-
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres")
     private String nombre;
+
+    @NotNull
+    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
+    private String cedula;
 
     @NotNull(message = "El correo no puede ser nulo")
     @Email(message = "El correo debe ser válido")
@@ -31,6 +31,5 @@ public class UsuarioRequestDTO {
     @NotNull(message = "El tipo de usuario no puede ser nulo")
     private TipoUsuario tipo;
 
-    @NotNull(message = "El estado del usuario no puede ser nulo")
     private EstadoUsuario estado;
 }
