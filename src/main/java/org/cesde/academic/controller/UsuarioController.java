@@ -63,6 +63,7 @@ public class UsuarioController {
                 : new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
+    @GetMapping("/buscar/tipo/{tipo}")
     public ResponseEntity<List<UsuarioResponseDTO>> getUsarioByTipo(@PathVariable TipoUsuario tipo){
         List<UsuarioResponseDTO> usuarios = usuarioService.getUsuarioByTipo(tipo);
         return usuarios.isEmpty()
