@@ -17,9 +17,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     boolean existsByCedula(String cedula);
     boolean existsByCedulaAndIdNot(String cedula, Integer id);
 
-    // Para obtener registros por columna que compartan un valor igual o similar
+    // Para obtener registros por columna que contenga un valor igual o similar al proporcionado
     List<Usuario> findAllByNombreContainingIgnoreCase(String nombre);
     List<Usuario> findAllByCedulaContainingIgnoreCase(String cedula);
     List<Usuario> findAllByCorreoContainingIgnoreCase(String correo);
-    List<Usuario> findAllByTipoContainingIgnoreCase(TipoUsuario tipo);
+    List<Usuario> findAllByTipo(TipoUsuario tipo);
 }
