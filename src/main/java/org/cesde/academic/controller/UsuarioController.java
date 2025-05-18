@@ -3,6 +3,7 @@ package org.cesde.academic.controller;
 import jakarta.validation.Valid;
 import org.cesde.academic.dto.request.UsuarioRequestDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
+import org.cesde.academic.enums.TipoUsuario;
 import org.cesde.academic.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,13 @@ public class UsuarioController {
     @GetMapping("/buscar/correo/{correo}")
     public ResponseEntity<List<UsuarioResponseDTO>> getUsuarioByCorreo(@PathVariable String correo){
         List<UsuarioResponseDTO> usuarios = usuarioService.getUsuarioByCorreo(correo);
+        return usuarios.isEmpty()
+                ? new ResponseEntity<>(usuarios, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<UsuarioResponseDTO>> getUsarioByTipo(@PathVariable TipoUsuario tipo){
+        List<UsuarioResponseDTO> usuarios = usuarioService.getUsuarioByTipo(tipo);
         return usuarios.isEmpty()
                 ? new ResponseEntity<>(usuarios, HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(usuarios, HttpStatus.OK);
