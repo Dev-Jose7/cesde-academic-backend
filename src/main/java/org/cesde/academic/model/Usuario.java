@@ -24,15 +24,15 @@ public class Usuario {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)  //Swagger: no pedirá actualizado en el cuerpo de entrada.
     private Integer id;
 
-    @NotNull
-    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
-    @Column(nullable = false, unique = true)
-    private String cedula;
-
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres")
     @Column(nullable = false)
     private String nombre;
+
+    @NotNull
+    @Size(min = 1, max = 20, message = "La cédula no puede tener mas de 20 caracteres")
+    @Column(nullable = false, unique = true)
+    private String cedula;
 
     @NotNull(message = "El correo no puede ser nulo")
     @Email(message = "El correo debe ser válido")
@@ -74,16 +74,16 @@ public class Usuario {
         this.id = id;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
     public String getCedula() {
         return cedula;
     }
 
     public void setCedula(String cedula) {
         this.cedula = cedula;
-    }
-
-    public String getNombre() {
-        return nombre;
     }
 
     public void setNombre(String nombre) {
