@@ -3,6 +3,7 @@ package org.cesde.academic.service.impl;
 import org.cesde.academic.dto.request.UsuarioRequestDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.enums.EstadoUsuario;
+import org.cesde.academic.enums.TipoUsuario;
 import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Usuario;
@@ -50,6 +51,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Override
     public List<UsuarioResponseDTO> getUsuarioByCorreo(String correo) {
         return createResponseList(usuarioRepository.findAllByCorreoContainingIgnoreCase(correo));
+    }
+
+    @Override
+    public List<UsuarioResponseDTO> getUsuarioByTipo(TipoUsuario tipo) {
+        return createResponseList(usuarioRepository.findAllByTipoContainingIgnoreCase(tipo));
     }
 
     @Override
