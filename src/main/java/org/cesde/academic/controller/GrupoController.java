@@ -3,6 +3,7 @@ package org.cesde.academic.controller;
 import jakarta.validation.Valid;
 import org.cesde.academic.dto.request.GrupoRequestDTO;
 import org.cesde.academic.dto.response.GrupoResponseDTO;
+import org.cesde.academic.enums.EstadoGrupo;
 import org.cesde.academic.service.IGrupoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,14 +39,6 @@ public class GrupoController {
         return new ResponseEntity<>(grupo, HttpStatus.OK);
     }
 
-    @GetMapping("/buscar/{codigo}")
-    public ResponseEntity<List<GrupoResponseDTO>> getGruposByCodigo(@PathVariable("codigo") String codigo) {
-        List<GrupoResponseDTO> grupos = grupoService.getGruposByCodigo(codigo);
-        return grupos.isEmpty()
-                ? new ResponseEntity<>(grupos, HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(grupos, HttpStatus.OK);
-    }
-
     @GetMapping("/programa/{id}")
     public ResponseEntity<List<GrupoResponseDTO>> getGruposByProgramaId(@PathVariable Integer id){
         List<GrupoResponseDTO> grupos = grupoService.getGruposByProgramaId(id);
@@ -57,6 +50,22 @@ public class GrupoController {
     @GetMapping("/semestre/{id}")
     public ResponseEntity<List<GrupoResponseDTO>> getGruposBySemestreId(@PathVariable Integer id){
         List<GrupoResponseDTO> grupos = grupoService.getGruposBySemestreId(id);
+        return grupos.isEmpty()
+                ? new ResponseEntity<>(grupos, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(grupos, HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar/codigo/{codigo}")
+    public ResponseEntity<List<GrupoResponseDTO>> getGruposByCodigo(@PathVariable("codigo") String codigo) {
+        List<GrupoResponseDTO> grupos = grupoService.getGruposByCodigo(codigo);
+        return grupos.isEmpty()
+                ? new ResponseEntity<>(grupos, HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(grupos, HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar/estado/{estado}")
+    public ResponseEntity<List<GrupoResponseDTO>> getGrupoByEstado(@PathVariable EstadoGrupo estado){
+        List<GrupoResponseDTO> grupos = grupoService.getGruposByEstado(estado);
         return grupos.isEmpty()
                 ? new ResponseEntity<>(grupos, HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(grupos, HttpStatus.OK);
