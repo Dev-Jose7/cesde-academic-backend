@@ -2,6 +2,7 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.GrupoRequestDTO;
 import org.cesde.academic.dto.response.GrupoResponseDTO;
+import org.cesde.academic.enums.EstadoGrupo;
 import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Grupo;
@@ -50,7 +51,7 @@ public class GrupoServiceImpl implements IGrupoService {
 
     @Override
     public List<GrupoResponseDTO> getGruposByCodigo(String codigo) {
-        return createResponseList(grupoRepository.findByCodigoContainingIgnoreCase(codigo));
+        return createResponseList(grupoRepository.findAllByCodigoContainingIgnoreCase(codigo));
     }
 
     @Override
@@ -61,6 +62,11 @@ public class GrupoServiceImpl implements IGrupoService {
     @Override
     public List<GrupoResponseDTO> getGruposBySemestreId(Integer semestreId) {
         return createResponseList(grupoRepository.findAllBySemestreId(semestreId));
+    }
+
+    @Override
+    public List<GrupoResponseDTO> getGruposByEstado(EstadoGrupo grupo) {
+        return createResponseList(grupoRepository.findAllByEstado(grupo));
     }
 
     @Override
@@ -123,8 +129,8 @@ public class GrupoServiceImpl implements IGrupoService {
         return new GrupoResponseDTO(
                 grupo.getId(),
                 grupo.getCodigo(),
-                grupo.getPrograma().getId(),
-                grupo.getSemestre().getId(),
+                grupo.getPrograma().getNombre(),
+                grupo.getSemestre().getNombre(),
                 grupo.getEstado(),
                 grupo.getCreado(),
                 grupo.getActualizado()
