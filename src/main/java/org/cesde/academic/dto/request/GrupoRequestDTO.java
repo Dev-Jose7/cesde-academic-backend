@@ -15,6 +15,5 @@ public class GrupoRequestDTO {
     @NotNull(message = "El semestre es obligatorio")
     private Integer semestreId;
 
-    @NotNull(message = "El estado del grupo es obligatorio")
     private EstadoGrupo estado;
 }

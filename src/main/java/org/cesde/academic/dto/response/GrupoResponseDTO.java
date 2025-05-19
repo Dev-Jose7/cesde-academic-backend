@@ -12,8 +12,8 @@ public class GrupoResponseDTO {
 
     private final Integer id;
     private final String codigo;
-    private final Integer programaId;
-    private final Integer semestreId;
+    private final String programa;
+    private final String semestre;
     private final EstadoGrupo estado;
     private final LocalDateTime creado;
     private final LocalDateTime actualizado;
