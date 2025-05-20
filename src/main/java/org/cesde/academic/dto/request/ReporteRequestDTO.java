@@ -18,6 +18,9 @@ public class ReporteRequestDTO {
     @NotNull(message = "El ID del usuario es obligatorio")
     private Integer usuarioId;
 
+    @NotNull(message = "El titulo es obligatorio")
+    private String titulo;
+
     @NotNull(message = "La descripción es obligatoria")
     private String descripcion;
 
