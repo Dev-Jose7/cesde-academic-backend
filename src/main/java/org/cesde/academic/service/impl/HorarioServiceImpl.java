@@ -58,9 +58,10 @@ public class HorarioServiceImpl implements IHorarioService {
     @Override
     public HorarioResponseDTO updateHorario(Integer id, HorarioRequestDTO request) {
         Horario actualizado = createEntity(request, id);
-        getHorarioByIdOrException(id);
-        validateUniqueDiaFranja(request, id);
-        actualizado.setId(id);
+        Horario antiguo = getHorarioByIdOrException(id);
+
+        actualizado.setId(antiguo.getId());
+        actualizado.setCreado(antiguo.getCreado());
         return createResponse(horarioRepository.save(actualizado));
     }
 
