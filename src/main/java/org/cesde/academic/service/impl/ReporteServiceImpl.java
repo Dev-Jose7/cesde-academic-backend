@@ -59,6 +59,11 @@ public class ReporteServiceImpl implements IReporteService {
     }
 
     @Override
+    public List<ReporteResponseDTO> getReportesByTitulo(String titulo) {
+        return createResponseList(reporteRepository.findallByTitulo(titulo));
+    }
+
+    @Override
     public List<ReporteResponseDTO> getReportesByFecha(LocalDate fecha) {
         return createResponseList(reporteRepository.findAllByFecha(fecha));
     }
@@ -90,16 +95,24 @@ public class ReporteServiceImpl implements IReporteService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Reporte no encontrado"));
     }
 
-    private Reporte createEntity(ReporteRequestDTO request) {
-        Clase clase = claseRepository.findById(request.getClaseId())
+    private Clase getClaseByIdOrException(Integer id) {
+        return claseRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Clase no encontrada"));
+    }
 
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+    private Usuario getUsuarioByIdOrException(Integer id) {
+        return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+    }
+
+    private Reporte createEntity(ReporteRequestDTO request) {
+        Clase clase = getClaseByIdOrException(request.getClaseId());
+        Usuario usuario = getUsuarioByIdOrException(request.getUsuarioId());
 
         Reporte reporte = new Reporte();
         reporte.setClase(clase);
         reporte.setUsuario(usuario);
+        reporte.setTitulo(request.getTitulo());
         reporte.setDescripcion(request.getDescripcion());
         reporte.setFecha(request.getFecha());
         reporte.setEstado(request.getEstado());
@@ -112,6 +125,7 @@ public class ReporteServiceImpl implements IReporteService {
                 reporte.getId(),
                 createClaseInfo(reporte),
                 reporte.getUsuario().getNombre(),
+                reporte.getTitulo(),
                 reporte.getDescripcion(),
                 reporte.getFecha(),
                 reporte.getEstado(),
