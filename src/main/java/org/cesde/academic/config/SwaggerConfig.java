@@ -15,8 +15,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         Server prodServer = new Server()
-                .url("https://cesde-academic-app-production.up.railway.app")
-                .description("Servidor en producción");
+                .url("https://cesde-academic-app-development.up.railway.app")
+                .description("Servidor de desarrollo");
 
         return new OpenAPI()
                 .info(new Info()
