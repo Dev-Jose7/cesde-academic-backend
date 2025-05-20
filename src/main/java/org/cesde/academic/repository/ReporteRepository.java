@@ -12,7 +12,7 @@ import java.util.List;
 public interface ReporteRepository extends JpaRepository<Reporte, Integer> {
     List<Reporte> findAllByClaseId(Integer claseId);
     List<Reporte> findAllByUsuarioId(Integer usuarioId);
+    List<Reporte> findallByTitulo(String titulo);
     List<Reporte> findAllByFecha(LocalDate fecha);
     List<Reporte> findAllByEstado(EstadoReporte estado);
-    List<Reporte> findallByTitulo(String titulo);
 }
