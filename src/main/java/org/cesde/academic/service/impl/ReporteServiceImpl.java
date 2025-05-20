@@ -60,7 +60,7 @@ public class ReporteServiceImpl implements IReporteService {
 
     @Override
     public List<ReporteResponseDTO> getReportesByTitulo(String titulo) {
-        return createResponseList(reporteRepository.findallByTitulo(titulo));
+        return createResponseList(reporteRepository.findAllByTitulo(titulo));
     }
 
     @Override
