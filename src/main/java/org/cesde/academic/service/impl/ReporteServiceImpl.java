@@ -115,7 +115,7 @@ public class ReporteServiceImpl implements IReporteService {
         reporte.setTitulo(request.getTitulo());
         reporte.setDescripcion(request.getDescripcion());
         reporte.setFecha(request.getFecha());
-        reporte.setEstado(request.getEstado());
+        reporte.setEstado(request.getEstado() == null ? EstadoReporte.PENDIENTE : request.getEstado());
 
         return reporte;
     }
