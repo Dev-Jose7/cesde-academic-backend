@@ -31,6 +31,11 @@ public class Reporte {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    @NotNull(message = "El título no puede ser nulo")
+    @Size(min = 1, max = 255, message = "El título debe tener entre 1 y 255 caracteres")
+    @Column(nullable = false, length = 255)
+    private String titulo;
+
     @NotNull(message = "La descripción no puede ser nula")
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -80,6 +85,14 @@ public class Reporte {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     public String getDescripcion() {
