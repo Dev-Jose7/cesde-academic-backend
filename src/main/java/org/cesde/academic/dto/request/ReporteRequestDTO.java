@@ -27,6 +27,5 @@ public class ReporteRequestDTO {
     @NotNull(message = "La fecha es obligatoria")
     private LocalDate fecha;
 
-    @Size(max = 50, message = "El estado no puede exceder los 50 caracteres")
     private EstadoReporte estado;
 }
