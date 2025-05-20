@@ -31,11 +31,11 @@ public class Horario {
     private FranjaHoraria franjaHoraria;
 
     @CreationTimestamp
-    @Column(name = "creado", nullable = false)
+    @Column(name = "creado", nullable = false, updatable = false)
     private LocalDateTime creado;
 
     @UpdateTimestamp
-    @Column(name = "creado", nullable = false)
+    @Column(name = "actualizado", nullable = false)
     private LocalDateTime actualizado;
 
     // Getters y Setters
@@ -84,8 +84,10 @@ public class Horario {
     public String toString() {
         return "Horario{" +
                 "id=" + id +
-                ", dia=" + (dia != null ? dia.getNombre() : null) +
+                ", dia=" + dia +
                 ", franjaHoraria=" + franjaHoraria +
+                ", creado=" + creado +
+                ", actualizado=" + actualizado +
                 '}';
     }
 }
