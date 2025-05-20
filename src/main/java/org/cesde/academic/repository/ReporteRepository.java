@@ -14,4 +14,5 @@ public interface ReporteRepository extends JpaRepository<Reporte, Integer> {
     List<Reporte> findAllByUsuarioId(Integer usuarioId);
     List<Reporte> findAllByFecha(LocalDate fecha);
     List<Reporte> findAllByEstado(EstadoReporte estado);
+    List<Reporte> findallByTitulo(String titulo);
 }
