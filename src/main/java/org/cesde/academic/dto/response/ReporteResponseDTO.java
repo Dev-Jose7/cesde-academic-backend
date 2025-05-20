@@ -14,6 +14,7 @@ public class ReporteResponseDTO {
     private final Integer id;
     private final ClaseResponseInfoDTO clase;
     private final String usuario;
+    private final String titulo;
     private final String descripcion;
     private final LocalDate fecha;
     private final EstadoReporte estado;
