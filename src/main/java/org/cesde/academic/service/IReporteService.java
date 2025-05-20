@@ -13,6 +13,7 @@ public interface IReporteService {
     ReporteResponseDTO getReporteById(Integer id);
     List<ReporteResponseDTO> getReportesByClaseId(Integer claseId);
     List<ReporteResponseDTO> getReportesByUsuarioId(Integer usuarioId);
+    List<ReporteResponseDTO> getReportesByTitulo(String titulo);
     List<ReporteResponseDTO> getReportesByFecha(LocalDate fecha);
     List<ReporteResponseDTO> getReportesByEstado(EstadoReporte estado);
     ReporteResponseDTO updateReporte(Integer id, ReporteRequestDTO request);

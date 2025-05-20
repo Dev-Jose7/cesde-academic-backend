@@ -55,17 +55,24 @@ public class ReporteController {
                 : new ResponseEntity<>(reportes, HttpStatus.OK);
     }
 
-    @GetMapping("/buscar/fecha")
-    public ResponseEntity<List<ReporteResponseDTO>> getReportesByFecha(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+    @GetMapping("/buscar/titulo/{titulo}")
+    public ResponseEntity<List<ReporteResponseDTO>> getReportesByTitulo(@PathVariable String titulo){
+        List<ReporteResponseDTO> reportes = reporteService.getReportesByTitulo(titulo);
+        return reportes.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(reportes, HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar/fecha/{fecha}")
+    public ResponseEntity<List<ReporteResponseDTO>> getReportesByFecha(@PathVariable LocalDate fecha) {
         List<ReporteResponseDTO> reportes = reporteService.getReportesByFecha(fecha);
         return reportes.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(reportes, HttpStatus.OK);
     }
 
-    @GetMapping("/buscar/estado")
-    public ResponseEntity<List<ReporteResponseDTO>> getReportesByEstado(@RequestParam EstadoReporte estado) {
+    @GetMapping("/buscar/estado/{estado}")
+    public ResponseEntity<List<ReporteResponseDTO>> getReportesByEstado(@PathVariable EstadoReporte estado) {
         List<ReporteResponseDTO> reportes = reporteService.getReportesByEstado(estado);
         return reportes.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
