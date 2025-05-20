@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "horario")
@@ -23,6 +29,14 @@ public class Horario {
     @ManyToOne
     @JoinColumn(name = "franja_id", nullable = false)
     private FranjaHoraria franjaHoraria;
+
+    @CreationTimestamp
+    @Column(name = "creado", nullable = false)
+    private LocalDateTime creado;
+
+    @UpdateTimestamp
+    @Column(name = "creado", nullable = false)
+    private LocalDateTime actualizado;
 
     // Getters y Setters
 
@@ -48,6 +62,22 @@ public class Horario {
 
     public void setFranjaHoraria(FranjaHoraria franjaHoraria) {
         this.franjaHoraria = franjaHoraria;
+    }
+
+    public LocalDateTime getCreado() {
+        return creado;
+    }
+
+    public void setCreado(LocalDateTime creado) {
+        this.creado = creado;
+    }
+
+    public LocalDateTime getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(LocalDateTime actualizado) {
+        this.actualizado = actualizado;
     }
 
     @Override
