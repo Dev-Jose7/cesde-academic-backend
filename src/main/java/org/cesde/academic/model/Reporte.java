@@ -18,7 +18,6 @@ public class Reporte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
     @NotNull(message = "La clase no puede ser nula")
@@ -46,21 +45,16 @@ public class Reporte {
     private LocalDate fecha;
 
     @NotNull(message = "El estado no puede ser nulo")
-    @Size(max = 50)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private EstadoReporte estado;
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime creado;
 
     @UpdateTimestamp
     @Column(name = "actualizado", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime actualizado;
 
     public Integer getId() {
