@@ -1,6 +1,8 @@
 package org.cesde.academic.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.cesde.academic.enums.EstadoDesempeno;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +30,9 @@ public class Desempeno {
     private Modulo modulo;
 
     @NotNull(message = "La calificación no puede ser nula")
-    @Column(nullable = false)
+    @DecimalMin(value = "0.0", inclusive = true, message = "La nota mínima es 0.0")
+    @DecimalMax(value = "5.0", inclusive = true, message = "La nota máxima es 5.0")
+    @Column(precision = 3, scale = 1, nullable = false)
     private BigDecimal calificacion;
 
     @NotNull(message = "El estado no puede ser nulo")
