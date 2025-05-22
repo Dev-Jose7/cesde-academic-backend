@@ -16,7 +16,7 @@ public class CorsConfig {
                 registry.addMapping("/**") // Aplica a todos los endpoints
                         .allowedOrigins(
                                 "https://cesde-academic-app-production.up.railway.app",
-                                "localhost:5173")
+                                "http://localhost:5173")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
