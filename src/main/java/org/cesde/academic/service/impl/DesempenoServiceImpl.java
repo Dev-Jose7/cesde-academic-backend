@@ -129,9 +129,7 @@ public class DesempenoServiceImpl implements IDesempenoService {
 
     // ID del modulo
     private void validateRelationEstudiante(Integer estudianteId, Integer moduloId){
-        Modulo modulo = getModuloByIdOrException(moduloId);
-
-        if(!modulo.getTipo().equals(TipoModulo.MATERIA)){
+        if(!getModuloByIdOrException(moduloId).getTipo().equals(TipoModulo.MATERIA)){
             return;
         }
 
