@@ -35,8 +35,7 @@ public class CalificacionServiceImpl implements ICalificacionService {
 
     @Override
     public CalificacionResponseDTO createCalificacion(CalificacionRequestDTO request) {
-        validateActividadEstudianteUnique(request, null);
-        Calificacion calificacion = createEntity(request);
+        Calificacion calificacion = createEntity(request, null);
         return createResponse(calificacionRepository.save(calificacion));
     }
 
@@ -62,10 +61,9 @@ public class CalificacionServiceImpl implements ICalificacionService {
 
     @Override
     public CalificacionResponseDTO updateCalificacion(Integer id, CalificacionRequestDTO request) {
-        validateActividadEstudianteUnique(request, id);
         Calificacion old = getCalificacionByIdOrException(id);
 
-        Calificacion updated = createEntity(request);
+        Calificacion updated = createEntity(request, id);
         updated.setId(old.getId());
         updated.setCreado(old.getCreado());
 
@@ -101,22 +99,6 @@ public class CalificacionServiceImpl implements ICalificacionService {
         return usuario;
     }
 
-
-
-//    private void validateActividadEstudianteUnique(CalificacionRequestDTO request, Integer id) {
-//        Optional<Calificacion> calificacion = calificacionRepository.findByActividadIdAndEstudianteId(request.getActividadId(), request.getEstudianteId());
-//
-//        if(id == null){ // Para crear
-//            if(calificacion.isPresent()){
-//                throw new RecursoExistenteException("Ya existe una calificación para este estudiante en la actividad especificada");
-//            }
-//        }
-//
-//        if (calificacion.isPresent() && !calificacion.get().getId().equals(id)) {
-//            throw new RecursoExistenteException("Ya existe una calificación para este estudiante en la actividad especificada");
-//        }
-//    }
-
     private void validateActividadEstudianteUnique(CalificacionRequestDTO request, Integer id) {
         boolean existe = (id == null)
                 ? calificacionRepository.existsByActividadIdAndEstudianteId(request.getActividadId(), request.getEstudianteId())
@@ -128,7 +110,9 @@ public class CalificacionServiceImpl implements ICalificacionService {
     }
 
 
-    private Calificacion createEntity(CalificacionRequestDTO request) {
+    private Calificacion createEntity(CalificacionRequestDTO request, Integer id) {
+        validateActividadEstudianteUnique(request, id);
+
         Calificacion calificacion = new Calificacion();
         calificacion.setActividad(getActividadOrException(request.getActividadId()));
         calificacion.setEstudiante(getEstudianteOrException(request.getEstudianteId()));
