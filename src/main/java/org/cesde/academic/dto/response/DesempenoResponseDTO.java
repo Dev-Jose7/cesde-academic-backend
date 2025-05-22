@@ -4,6 +4,7 @@ import lombok.*;
 import org.cesde.academic.enums.EstadoDesempeno;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
@@ -14,4 +15,6 @@ public class DesempenoResponseDTO {
     private String modulo;
     private BigDecimal calificacion;
     private EstadoDesempeno estado;
+    private final LocalDateTime creado;
+    private final LocalDateTime actualizado;
 }
