@@ -3,21 +3,19 @@ package org.cesde.academic.service.impl;
 import org.cesde.academic.dto.request.DesempenoRequestDTO;
 import org.cesde.academic.dto.response.DesempenoResponseDTO;
 import org.cesde.academic.enums.EstadoDesempeno;
+import org.cesde.academic.enums.TipoModulo;
 import org.cesde.academic.enums.TipoUsuario;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.exception.TipoIncorrectoException;
-import org.cesde.academic.model.Desempeno;
-import org.cesde.academic.model.Modulo;
-import org.cesde.academic.model.Usuario;
-import org.cesde.academic.repository.DesempenoRepository;
-import org.cesde.academic.repository.ModuloRepository;
-import org.cesde.academic.repository.UsuarioRepository;
+import org.cesde.academic.model.*;
+import org.cesde.academic.repository.*;
 import org.cesde.academic.service.IDesempenoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DesempenoServiceImpl implements IDesempenoService {
@@ -30,6 +28,15 @@ public class DesempenoServiceImpl implements IDesempenoService {
     
     @Autowired
     private ModuloRepository moduloRepository;
+
+    @Autowired
+    private ClaseRepository claseRepository;
+
+    @Autowired
+    private GrupoRepository grupoRepository;
+
+    @Autowired
+    private GrupoEstudianteRepository grupoEstudianteRepository;
 
     @Override
     public DesempenoResponseDTO createDesempeno(DesempenoRequestDTO request) {
@@ -100,7 +107,48 @@ public class DesempenoServiceImpl implements IDesempenoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Modulo no encontrado"));
     }
 
+    private List<Clase> getClaseByModuloOrException(Integer id) {
+        List<Clase> clases = claseRepository.findAllByModuloId(id);
+
+        if(clases.isEmpty()){
+            throw new RecursoNoEncontradoException("Modulo no existente");
+        }
+
+        return clases;
+    }
+
+    private List<Grupo> getGrupoByCodigoOrException(String codigo){
+        List<Grupo> grupos = grupoRepository.findAllByCodigoContainingIgnoreCase(codigo);
+
+        if(grupos.isEmpty()){
+            throw new RecursoNoEncontradoException("Grupo no existente");
+        }
+
+        return grupos;
+    }
+
+    // ID del modulo
+    private void validateRelationEstudiante(Integer estudianteId, Integer moduloId){
+        Modulo modulo = getModuloByIdOrException(moduloId);
+
+        if(!modulo.getTipo().equals(TipoModulo.MATERIA)){
+            return;
+        }
+
+        List<Clase> clase = getClaseByModuloOrException(moduloId);
+        List<Grupo> grupo = getGrupoByCodigoOrException(clase.getFirst().getGrupo().getCodigo());
+        List<GrupoEstudiante> relations = grupoEstudianteRepository.findByGrupo_Id(grupo.getFirst().getId());
+
+        Optional<GrupoEstudiante> validation = relations.stream()
+                .filter(relation -> relation.getEstudiante().getId().equals(estudianteId))
+                .findFirst();
+
+        validation.orElseThrow(() -> new RecursoNoEncontradoException("El estudiante no tiene relación con el modulo"));
+    }
+
     private Desempeno createEntity(DesempenoRequestDTO request) {
+        validateRelationEstudiante(request.getEstudianteId(), request.getModuloId());
+
         Desempeno Desempeno = new Desempeno();
         Desempeno.setEstudiante(getEstudianteOrException(request.getEstudianteId()));
         Desempeno.setModulo(getModuloByIdOrException(request.getModuloId()));
