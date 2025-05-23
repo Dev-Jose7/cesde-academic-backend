@@ -134,8 +134,8 @@ public class DesempenoServiceImpl implements IDesempenoService {
         }
 
         List<Clase> clase = getClaseByModuloOrException(moduloId);
-        List<Grupo> grupo = getGrupoByCodigoOrException(clase.getFirst().getGrupo().getCodigo());
-        List<GrupoEstudiante> relations = grupoEstudianteRepository.findByGrupo_Id(grupo.getFirst().getId());
+        List<Grupo> grupo = getGrupoByCodigoOrException(clase.get(0).getGrupo().getCodigo());
+        List<GrupoEstudiante> relations = grupoEstudianteRepository.findByGrupo_Id(grupo.get(0).getId());
 
         Optional<GrupoEstudiante> validation = relations.stream()
                 .filter(relation -> relation.getEstudiante().getId().equals(estudianteId))
