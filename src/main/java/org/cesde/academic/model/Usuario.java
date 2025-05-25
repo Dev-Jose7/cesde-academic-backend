@@ -12,6 +12,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuario")
@@ -53,6 +55,25 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private EstadoUsuario estado;
+
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+
+    @Column(name = "account_no_expired")
+    private boolean accountNoExpired;
+
+    @Column(name = "account_no_locked")
+    private boolean accountNoLocked;
+
+    @Column(name = "credential_no_expired")
+    private boolean credentialNoExpired;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable( // Crea tabla intermedia: "Para relacionar estas dos entidades (User ↔ Role), se realizará a través de esta tabla intermedia con estas columnas."
+            name = "usuario_role",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "creado", nullable = false, updatable = false)
@@ -120,6 +141,46 @@ public class Usuario {
 
     public void setEstado(EstadoUsuario estado) {
         this.estado = estado;
+    }
+
+    public boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public boolean getAccountNoExpired() {
+        return accountNoExpired;
+    }
+
+    public void setAccountNoExpired(boolean accountNoExpired) {
+        this.accountNoExpired = accountNoExpired;
+    }
+
+    public boolean getAccountNoLocked() {
+        return accountNoLocked;
+    }
+
+    public void setAccountNoLocked(boolean accountNoLocked) {
+        this.accountNoLocked = accountNoLocked;
+    }
+
+    public boolean getCredentialNoExpired() {
+        return credentialNoExpired;
+    }
+
+    public void setCredentialNoExpired(boolean credentialNoExpired) {
+        this.credentialNoExpired = credentialNoExpired;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public LocalDateTime getCreado() {
