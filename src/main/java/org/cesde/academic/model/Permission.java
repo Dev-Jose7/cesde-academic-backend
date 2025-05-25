@@ -10,7 +10,15 @@ public class Permission {
     private Integer id;
 
     @Column(unique = true, nullable = false, updatable = false)
-    private String name;
+    private String nombre;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public Integer getId() {
         return id;
@@ -18,13 +26,5 @@ public class Permission {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
