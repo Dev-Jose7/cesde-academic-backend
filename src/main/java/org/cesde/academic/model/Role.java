@@ -15,7 +15,7 @@ public class Role {
 
     @Column(name = "nombre")
     @Enumerated(EnumType.STRING)
-    private NombreRole roleEnum;
+    private NombreRole nombre;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -33,12 +33,12 @@ public class Role {
         this.id = id;
     }
 
-    public NombreRole getRoleEnum() {
-        return roleEnum;
+    public NombreRole getNombre() {
+        return nombre;
     }
 
-    public void setRoleEnum(NombreRole roleEnum) {
-        this.roleEnum = roleEnum;
+    public void setNombre(NombreRole nombre) {
+        this.nombre = nombre;
     }
 
     public Set<Permission> getPermisos() {
