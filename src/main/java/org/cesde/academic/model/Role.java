@@ -48,4 +48,13 @@ public class Role {
     public void setPermisos(Set<Permission> permisos) {
         this.permisos = permisos;
     }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", nombre=" + nombre +
+                ", permisos=" + permisos +
+                '}';
+    }
 }
