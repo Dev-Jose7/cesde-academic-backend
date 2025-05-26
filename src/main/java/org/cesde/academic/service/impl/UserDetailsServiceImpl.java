@@ -34,12 +34,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getNombre())); // Asumiendo que el role tiene un nombre
         }
 
+        System.out.println("Roles:" + authorities);
+
         // Agregar los permisos de cada rol como autoridades
         for (Role role : usuario.getRoles()) {
             for (Permission permission : role.getPermisos()) {
                 authorities.add(new SimpleGrantedAuthority(permission.getNombre()));
             }
         }
+
+        System.out.println("Permisos:" + authorities);
 
         // Crear el objeto UserDetails con los datos del usuario
         return new org.springframework.security.core.userdetails.User(
