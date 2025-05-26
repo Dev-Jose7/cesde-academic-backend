@@ -22,4 +22,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     List<Usuario> findAllByCedulaContainingIgnoreCase(String cedula);
     List<Usuario> findAllByCorreoContainingIgnoreCase(String correo);
     List<Usuario> findAllByTipo(TipoUsuario tipo);
+
+    Optional<Usuario> findByCorreo(String correo);
+    Optional<Usuario> findByCedula(String cedula);
 }
