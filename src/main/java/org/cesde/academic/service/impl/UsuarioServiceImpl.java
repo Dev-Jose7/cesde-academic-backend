@@ -3,24 +3,28 @@ package org.cesde.academic.service.impl;
 import org.cesde.academic.dto.request.UsuarioRequestDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.enums.EstadoUsuario;
+import org.cesde.academic.enums.NombreRole;
 import org.cesde.academic.enums.TipoUsuario;
 import org.cesde.academic.exception.RecursoExistenteException;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
+import org.cesde.academic.model.Role;
 import org.cesde.academic.model.Usuario;
+import org.cesde.academic.repository.RoleRepository;
 import org.cesde.academic.repository.UsuarioRepository;
 import org.cesde.academic.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
+import java.util.*;
 
 @Service
 public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO request) {
@@ -109,7 +113,30 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuario.setContrasena(request.getContrasena());
         usuario.setTipo(request.getTipo());
         usuario.setEstado(request.getEstado() == null ? EstadoUsuario.ACTIVO : request.getEstado());
+        usuario.setIsEnabled(true);
+        usuario.setAccountNoExpired(true);
+        usuario.setAccountNoLocked(true);
+        usuario.setCredentialNoExpired(true);
+        usuario.setRoles(createRole(usuario.getTipo()));
         return usuario;
+    }
+
+    private Set<Role> createRole(TipoUsuario tipo){
+        Set<Role> roles = new HashSet<>();
+
+        switch (tipo){
+            case ESTUDIANTE -> {
+                roles.add(roleRepository.findByNombre(NombreRole.USER)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.USER + "no encontrado")));
+            }
+
+            case DOCENTE, ADMINISTRATIVO, DIRECTIVO -> {
+                roles.add(roleRepository.findByNombre(NombreRole.ADMIN)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.ADMIN + "no encontrado")));
+            }
+        }
+
+        return roles;
     }
 
     private UsuarioResponseDTO createResponse(Usuario usuario){
