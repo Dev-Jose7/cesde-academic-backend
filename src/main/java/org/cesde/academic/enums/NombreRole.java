@@ -1,5 +1,5 @@
 package org.cesde.academic.enums;
 
 public enum NombreRole {
-    ADMIN, USER, DEV, INVITED
+    INVITADO, ESTUDIANTE, DOCENTE, ADMINISTRATIVO, DIRECTIVO, DEV
 }

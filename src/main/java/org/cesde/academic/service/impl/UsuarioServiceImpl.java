@@ -126,13 +126,23 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         switch (tipo){
             case ESTUDIANTE -> {
-                roles.add(roleRepository.findByNombre(NombreRole.USER)
-                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.USER + "no encontrado")));
+                roles.add(roleRepository.findByNombre(NombreRole.ESTUDIANTE)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.ESTUDIANTE + "no encontrado")));
             }
 
-            case DOCENTE, ADMINISTRATIVO, DIRECTIVO -> {
-                roles.add(roleRepository.findByNombre(NombreRole.ADMIN)
-                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.ADMIN + "no encontrado")));
+            case DOCENTE -> {
+                roles.add(roleRepository.findByNombre(NombreRole.DOCENTE)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.DOCENTE + "no encontrado")));
+            }
+
+            case ADMINISTRATIVO -> {
+                roles.add(roleRepository.findByNombre(NombreRole.ADMINISTRATIVO)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.ADMINISTRATIVO + "no encontrado")));
+            }
+
+            case DIRECTIVO -> {
+                roles.add(roleRepository.findByNombre(NombreRole.DIRECTIVO)
+                        .orElseThrow(() -> new RecursoNoEncontradoException("Role " + NombreRole.DIRECTIVO + "no encontrado")));
             }
         }
 
