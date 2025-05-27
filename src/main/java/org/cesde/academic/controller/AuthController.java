@@ -46,3 +46,13 @@ public class AuthController {
         }
     }
 }
+
+// Esto es una especie de “híbrido”:
+// Se usará un login tipo formulario en el frontend donde el usuario pone su cédula y contraseña.
+// En vez de enviar esas credenciales en cada petición desde el frontend usando Base64 en JS, se genera un token en Base64 (tipo Basic <base64(cedula:contrasena)>) una sola vez y se reutiliza en las peticiones siguientes.
+
+// Usar el endpoint /auth/login para:
+// Validar credenciales.
+// Generar un token Basic base64(cedula:contrasena).
+// Enviarlo al frontend.
+// Luego, el frontend lo guarda (en localStorage o sessionStorage) y lo usa en cada petición:
