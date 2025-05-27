@@ -57,16 +57,16 @@ public class Usuario {
     private EstadoUsuario estado;
 
     @Column(name = "is_enabled")
-    private boolean isEnabled;
+    private Boolean isEnabled;
 
     @Column(name = "account_no_expired")
-    private boolean accountNoExpired;
+    private Boolean accountNoExpired;
 
     @Column(name = "account_no_locked")
-    private boolean accountNoLocked;
+    private Boolean accountNoLocked;
 
     @Column(name = "credential_no_expired")
-    private boolean credentialNoExpired;
+    private Boolean credentialNoExpired;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable( // Crea tabla intermedia: "Para relacionar estas dos entidades (User ↔ Role), se realizará a través de esta tabla intermedia con estas columnas."
@@ -143,32 +143,32 @@ public class Usuario {
         this.estado = estado;
     }
 
-    public boolean getIsEnabled() {
-        return isEnabled;
+    public Boolean getIsEnabled() {
+        return Boolean.TRUE.equals(isEnabled); // Solo devuelve true si es explícitamente true
     }
 
     public void setIsEnabled(boolean enabled) {
         isEnabled = enabled;
     }
 
-    public boolean getAccountNoExpired() {
-        return accountNoExpired;
+    public Boolean getAccountNoExpired() {
+        return Boolean.TRUE.equals(accountNoExpired);
     }
 
     public void setAccountNoExpired(boolean accountNoExpired) {
         this.accountNoExpired = accountNoExpired;
     }
 
-    public boolean getAccountNoLocked() {
-        return accountNoLocked;
+    public Boolean getAccountNoLocked() {
+        return Boolean.TRUE.equals(accountNoLocked);
     }
 
     public void setAccountNoLocked(boolean accountNoLocked) {
         this.accountNoLocked = accountNoLocked;
     }
 
-    public boolean getCredentialNoExpired() {
-        return credentialNoExpired;
+    public Boolean getCredentialNoExpired() {
+        return Boolean.TRUE.equals(credentialNoExpired);
     }
 
     public void setCredentialNoExpired(boolean credentialNoExpired) {
