@@ -13,6 +13,7 @@ import org.cesde.academic.repository.RoleRepository;
 import org.cesde.academic.repository.UsuarioRepository;
 import org.cesde.academic.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,6 +26,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO request) {
@@ -110,7 +114,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuario.setNombre(request.getNombre());
         usuario.setCedula(request.getCedula());
         usuario.setCorreo(request.getCorreo());
-        usuario.setContrasena(request.getContrasena());
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
         usuario.setTipo(request.getTipo());
         usuario.setEstado(request.getEstado() == null ? EstadoUsuario.ACTIVO : request.getEstado());
         usuario.setIsEnabled(true);
