@@ -11,7 +11,7 @@ import java.util.Base64; // Para codificar las credenciales en Base64
 import java.util.Map; // Para devolver una respuesta en formato JSON sencillo
 
 @RestController // Indica que esta clase es un controlador REST que devuelve datos (no vistas HTML)
-@RequestMapping("/dev/auth") // Prefijo común para todas las rutas de este controlador
+@RequestMapping("/auth") // Prefijo común para todas las rutas de este controlador
 public class AuthController {
 
     @Autowired // Inyección de dependencias: Spring inyectará una instancia del AuthenticationManager automáticamente
