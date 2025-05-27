@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())  // Autenticación HTTP Basic
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Sin sesión
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/crear").permitAll()
                         .anyRequest().authenticated())  // Se autoriza a que todas las peticiones http sean respondidas si el usuario está autenticado.
                 .build();  // Construye la configuración
     }
