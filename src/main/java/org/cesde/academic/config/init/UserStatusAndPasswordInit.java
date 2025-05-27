@@ -20,28 +20,38 @@ public class UserStatusAndPasswordInit {
             List<Usuario> usuarios = usuarioRepository.findAll();
 
             for (Usuario usuario : usuarios) {
-                // Inicializar campos de estado si son null, si no, dejarlos tal cual.
-                if (!usuario.getAccountNoExpired()) {
+                boolean modified = false;
+
+                if (usuario.getAccountNoExpired() == null) {
                     usuario.setAccountNoExpired(true);
-                }
-                if (!usuario.getAccountNoLocked()) {
-                    usuario.setAccountNoLocked(true);
-                }
-                if (!usuario.getCredentialNoExpired()) {
-                    usuario.setCredentialNoExpired(true);
-                }
-                if (!usuario.getIsEnabled()) {
-                    usuario.setIsEnabled(true);
+                    modified = true;
                 }
 
-                // Encriptar contraseña si no está encriptada (no empieza con $2a$)
+                if (usuario.getAccountNoLocked() == null) {
+                    usuario.setAccountNoLocked(true);
+                    modified = true;
+                }
+
+                if (usuario.getCredentialNoExpired() == null) {
+                    usuario.setCredentialNoExpired(true);
+                    modified = true;
+                }
+
+                if (usuario.getIsEnabled() == null) {
+                    usuario.setIsEnabled(true);
+                    modified = true;
+                }
+
                 String actual = usuario.getContrasena();
-                if (!actual.startsWith("$2a$")) {
+                if (actual != null && !actual.startsWith("$2a$")) {
                     usuario.setContrasena(encoder.encode(actual));
                     System.out.println("Contraseña encriptada para usuario: " + usuario.getCorreo());
+                    modified = true;
                 }
 
-                usuarioRepository.save(usuario);
+                if (modified) {
+                    usuarioRepository.save(usuario);
+                }
             }
 
             System.out.println("Inicialización de estado y contraseñas completada.");

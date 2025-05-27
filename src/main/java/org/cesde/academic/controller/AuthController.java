@@ -1,6 +1,12 @@
 package org.cesde.academic.controller; // Define el paquete donde está ubicada esta clase
 
+import org.cesde.academic.dto.response.UsuarioResponseDTO;
+import org.cesde.academic.exception.RecursoNoEncontradoException;
+import org.cesde.academic.model.Usuario;
+import org.cesde.academic.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager; // Componente principal para manejar autenticaciones
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Token de autenticación basado en nombre de usuario y contraseña
 import org.springframework.security.core.Authentication; // Representa una autenticación exitosa
@@ -17,9 +23,12 @@ public class AuthController {
     @Autowired // Inyección de dependencias: Spring inyectará una instancia del AuthenticationManager automáticamente
     private AuthenticationManager authenticationManager;
 
-    // Define un endpoint POST en /dev/auth/basic-token
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // Define un endpoint POST en /auth/login
     @PostMapping("/login")
-    public Map<String, String> getBasicAuthToken(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<UsuarioResponseDTO> getBasicAuthToken(@RequestBody Map<String, String> credentials) {
         // Extrae la cédula (nombre de usuario) del cuerpo del request
         String cedula = credentials.get("cedula");
 
@@ -34,11 +43,20 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(cedula, contrasena)
             );
 
-            // Si la autenticación fue exitosa, genera un token Base64 con el formato "cedula:contrasena"
-            String token = Base64.getEncoder().encodeToString((cedula + ":" + contrasena).getBytes());
+            Usuario usuario = usuarioRepository.findByCedula(cedula)
+                    .orElseThrow(() -> new RecursoNoEncontradoException("El usuario no existe"));
 
-            // Devuelve un JSON con el token en formato Authorization: Basic ...
-            return Map.of("basicAuthToken", "Basic " + token);
+            UsuarioResponseDTO response = new UsuarioResponseDTO(
+                    usuario.getId(),
+                    usuario.getCedula(),
+                    usuario.getNombre(),
+                    usuario.getTipo(),
+                    usuario.getEstado(),
+                    usuario.getCreado(),
+                    usuario.getActualizado()
+            );
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (AuthenticationException ex) {
             // Si la autenticación falla (credenciales incorrectas), lanza una excepción con mensaje personalizado
