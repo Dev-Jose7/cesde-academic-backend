@@ -8,6 +8,7 @@ import org.cesde.academic.service.IGrupoEstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class GrupoEstudianteController {
 
     // Crear un nuevo registro grupo-estudiante
     @PostMapping("/crear")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('CREATE')")
     public ResponseEntity<GrupoEstudianteResponseDTO> createGrupoEstudiante(@Valid @RequestBody GrupoEstudianteRequestDTO request) {
         GrupoEstudianteResponseDTO response = grupoEstudianteService.createGrupoEstudiante(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -28,6 +30,7 @@ public class GrupoEstudianteController {
 
     // Obtener todos los registros
     @GetMapping("/lista")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<GrupoEstudianteResponseDTO>> getListaGrupoEstudiantes() {
         List<GrupoEstudianteResponseDTO> lista = grupoEstudianteService.getGrupoEstudiantes();
 
@@ -38,6 +41,7 @@ public class GrupoEstudianteController {
 
     // Obtener un registro por ID compuesto
     @GetMapping("/{grupoId}/{estudianteId}")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<GrupoEstudianteResponseDTO> getGrupoEstudianteById(@PathVariable Integer grupoId, @PathVariable Integer estudianteId) {
         GrupoEstudianteId id = new GrupoEstudianteId(grupoId, estudianteId);
         GrupoEstudianteResponseDTO response = grupoEstudianteService.getGrupoEstudianteById(id);
@@ -46,6 +50,7 @@ public class GrupoEstudianteController {
 
     // Obtener todos los estudiantes de un grupo
     @GetMapping("/grupo/{grupoId}")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<GrupoEstudianteResponseDTO>> getGrupoEstudiantesByGrupoId(@PathVariable Integer grupoId) {
         List<GrupoEstudianteResponseDTO> lista = grupoEstudianteService.getGrupoEstudiantesByGrupoId(grupoId);
 
@@ -56,6 +61,7 @@ public class GrupoEstudianteController {
 
     // Obtener todos los grupos de un estudiante
     @GetMapping("/estudiante/{estudianteId}")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<GrupoEstudianteResponseDTO>> getGrupoEstudiantesByEstudianteId(@PathVariable Integer estudianteId) {
         List<GrupoEstudianteResponseDTO> lista = grupoEstudianteService.getGrupoEstudiantesByEstudianteId(estudianteId);
 
@@ -66,6 +72,7 @@ public class GrupoEstudianteController {
 
     // Actualizar la relación grupo-estudiante
     @PutMapping("/editar/{grupoId}/{estudianteId}")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('UPDATE')")
     public ResponseEntity<GrupoEstudianteResponseDTO> updateGrupoEstudiante(@PathVariable Integer grupoId, @PathVariable Integer estudianteId,
                                                                             @Valid @RequestBody GrupoEstudianteRequestDTO request) {
         GrupoEstudianteId id = new GrupoEstudianteId(grupoId, estudianteId);
@@ -75,6 +82,7 @@ public class GrupoEstudianteController {
 
     // Eliminar una relación grupo-estudiante
     @DeleteMapping("/remover/{grupoId}/{estudianteId}")
+    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteGrupoEstudiante(@PathVariable Integer grupoId, @PathVariable Integer estudianteId) {
         GrupoEstudianteId id = new GrupoEstudianteId(grupoId, estudianteId);
         grupoEstudianteService.deleteGrupoEstudiante(id);
