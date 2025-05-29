@@ -1,9 +1,13 @@
 package org.cesde.academic.controller; // Define el paquete donde está ubicada esta clase
 
+import jakarta.validation.Valid;
+import org.cesde.academic.dto.request.AuthRequestDTO;
+import org.cesde.academic.dto.response.AuthResponseDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.UsuarioRepository;
+import org.cesde.academic.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,48 +24,12 @@ import java.util.Map; // Para devolver una respuesta en formato JSON sencillo
 @RequestMapping("/auth") // Prefijo común para todas las rutas de este controlador
 public class AuthController {
 
-    @Autowired // Inyección de dependencias: Spring inyectará una instancia del AuthenticationManager automáticamente
-    private AuthenticationManager authenticationManager;
-
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    UserDetailsServiceImpl userDetailsService;
 
-    // Define un endpoint POST en /auth/login
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> getBasicAuthToken(@RequestBody Map<String, String> credentials) {
-        // Extrae la cédula (nombre de usuario) del cuerpo del request
-        String cedula = credentials.get("cedula");
-
-        // Extrae la contraseña del cuerpo del request
-        String contrasena = credentials.get("contrasena");
-
-        try {
-            // Usa el AuthenticationManager para autenticar las credenciales
-            // Esto valida el usuario con UserDetailsService y compara contraseñas con PasswordEncoder
-            Authentication authentication = authenticationManager.authenticate(
-                    // Crea un token de autenticación con las credenciales del usuario
-                    new UsernamePasswordAuthenticationToken(cedula, contrasena)
-            );
-
-            Usuario usuario = usuarioRepository.findByCedula(cedula)
-                    .orElseThrow(() -> new RecursoNoEncontradoException("El usuario no existe"));
-
-            UsuarioResponseDTO response = new UsuarioResponseDTO(
-                    usuario.getId(),
-                    usuario.getCedula(),
-                    usuario.getNombre(),
-                    usuario.getTipo(),
-                    usuario.getEstado(),
-                    usuario.getCreado(),
-                    usuario.getActualizado()
-            );
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (AuthenticationException ex) {
-            // Si la autenticación falla (credenciales incorrectas), lanza una excepción con mensaje personalizado
-            throw new RuntimeException("Credenciales inválidas", ex);
-        }
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request){
+        return new ResponseEntity<>(userDetailsService.loginUser(request), HttpStatus.OK);
     }
 }
 
