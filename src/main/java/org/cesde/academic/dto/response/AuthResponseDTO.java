@@ -1,0 +1,15 @@
+package org.cesde.academic.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@Getter
+@ToString
+public class AuthResponseDTO {
+    private String cedula;
+    private String mensaje;
+    private String token;
+    private boolean status;
+}
