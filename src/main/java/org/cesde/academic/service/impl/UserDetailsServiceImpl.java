@@ -1,15 +1,24 @@
 package org.cesde.academic.service.impl;
 
+import org.cesde.academic.dto.request.AuthRequestDTO;
+import org.cesde.academic.dto.response.AuthResponseDTO;
 import org.cesde.academic.model.Permission;
 import org.cesde.academic.model.Role;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.cesde.academic.util.JwtUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +28,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Override
     public UserDetails loadUserByUsername(String cedula) throws UsernameNotFoundException {
@@ -51,5 +66,29 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 usuario.getAccountNoLocked(),
                 authorities
         );
+    }
+
+    public AuthResponseDTO loginUser(AuthRequestDTO request){
+
+        Authentication authentication = this.authenticate(request.getCedula(), request.getContrasena());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String accessToken =  jwtUtils.createToken(authentication);
+
+        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, true);
+    }
+
+    public Authentication authenticate(String cedula, String contrasena){
+        UserDetails userDetails = this.loadUserByUsername(cedula);
+
+        if (userDetails == null){
+            throw new BadCredentialsException("Credenciales invalidas");
+        }
+
+        if (!passwordEncoder.matches(contrasena, userDetails.getPassword())){
+            throw new BadCredentialsException("Credenciales invalidas");
+        }
+
+        return new UsernamePasswordAuthenticationToken(cedula, userDetails.getPassword(), userDetails.getAuthorities());
     }
 }
