@@ -35,7 +35,9 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(jwtToken != null){
-            jwtToken = jwtToken.substring(7); // Ignora al string Bearer y tomar solo el token
+            jwtToken = jwtToken.startsWith("Bearer")
+                    ? jwtToken.substring(7) // Ignora al string Bearer y tomar solo el token
+                    : jwtToken;
 
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 
