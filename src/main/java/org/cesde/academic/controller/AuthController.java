@@ -24,7 +24,6 @@ import java.util.Map; // Para devolver una respuesta en formato JSON sencillo
 @RequestMapping("/auth") // Prefijo común para todas las rutas de este controlador
 public class AuthController {
 
-
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
