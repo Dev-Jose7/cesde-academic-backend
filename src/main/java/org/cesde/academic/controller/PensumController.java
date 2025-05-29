@@ -61,13 +61,13 @@ public class PensumController {
                 : new ResponseEntity<>(pensums, HttpStatus.OK);
     }
 
-    @PostMapping("/editar/{id}")
+    @PutMapping("/editar/{id}")
     public ResponseEntity<PensumResponseDTO> updatePensum(@PathVariable Integer id,
                                                           @Valid @RequestBody PensumRequestDTO request){
         return new ResponseEntity<>(pensumService.updatePensum(id, request), HttpStatus.OK);
     }
 
-    @PostMapping("/remover/{id}")
+    @DeleteMapping("/remover/{id}")
     public ResponseEntity<PensumResponseDTO> deletePensum(@PathVariable Integer id){
         pensumService.deletePensum(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
