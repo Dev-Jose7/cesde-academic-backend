@@ -3,6 +3,7 @@ package org.cesde.academic.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "jwt_blacklist", indexes = {
@@ -19,7 +20,7 @@ public class JwtBlacklist {
     private String token;
 
     @Column(name = "expiracion", nullable = false)
-    private LocalDateTime expiracion;
+    private Date expiracion;
 
     public Integer getId() {
         return id;
@@ -37,11 +38,11 @@ public class JwtBlacklist {
         this.token = token;
     }
 
-    public LocalDateTime getExpiracion() {
+    public Date getExpiracion() {
         return expiracion;
     }
 
-    public void setExpiracion(LocalDateTime expiracion) {
+    public void setExpiracion(Date expiracion) {
         this.expiracion = expiracion;
     }
 
