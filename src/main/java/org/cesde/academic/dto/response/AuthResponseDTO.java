@@ -10,6 +10,7 @@ import lombok.ToString;
 public class AuthResponseDTO {
     private String cedula;
     private String mensaje;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private boolean status;
 }
