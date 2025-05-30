@@ -1,8 +1,10 @@
 package org.cesde.academic.controller; // Define el paquete donde está ubicada esta clase
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.validation.Valid;
 import org.cesde.academic.dto.request.AuthRequestDTO;
+import org.cesde.academic.dto.request.RefreshTokenRequest;
 import org.cesde.academic.dto.response.AuthResponseDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
@@ -20,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager; // Com
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Token de autenticación basado en nombre de usuario y contraseña
 import org.springframework.security.core.Authentication; // Representa una autenticación exitosa
 import org.springframework.security.core.AuthenticationException; // Excepción lanzada si la autenticación falla
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*; // Anotaciones para controladores REST
 
 import java.time.LocalDateTime;
@@ -43,6 +46,24 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request){
         return new ResponseEntity<>(userDetailsService.loginUser(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+        try {
+            DecodedJWT decodedJWT = jwtUtil.validateToken(request.getRefreshToken());
+            String cedula = decodedJWT.getSubject();
+
+            // Puedes añadir validaciones extra aquí: blacklist, jti, expiración manual, etc.
+
+            Authentication authentication = userDetailsService.authenticateRefreshToken(cedula);
+            String newAccessToken = jwtUtil.createToken(authentication);
+
+            return ResponseEntity.ok(new AuthResponseDTO(cedula, "Token renovado", newAccessToken, request.getRefreshToken(), true));
+
+        } catch (JWTVerificationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token inválido o expirado");
+        }
     }
 
     @PostMapping("/logout")

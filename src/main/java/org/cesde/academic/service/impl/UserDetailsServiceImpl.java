@@ -78,8 +78,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken =  jwtUtils.createToken(authentication);
+        String refreshToken = jwtUtils.createRefreshToken(request.getCedula());
 
-        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, true);
+        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, refreshToken, true);
     }
 
     public Authentication authenticate(String cedula, String contrasena){
@@ -94,5 +95,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         return new UsernamePasswordAuthenticationToken(cedula, userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public Authentication authenticateRefreshToken(String cedula) {
+        UserDetails userDetails = this.loadUserByUsername(cedula);
+        if (userDetails == null) {
+            throw new BadCredentialsException("Usuario no encontrado");
+        }
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails.getUsername(), null, userDetails.getAuthorities()
+        );
     }
 }
