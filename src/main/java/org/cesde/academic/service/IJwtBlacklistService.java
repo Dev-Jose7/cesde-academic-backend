@@ -6,7 +6,7 @@ import java.util.Date;
 
 public interface IJwtBlacklistService {
 
-    void blacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario);
+    void createBlacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario);
 
     boolean isAccessTokenBlacklisted(String accessToken);
 
