@@ -30,6 +30,9 @@ public class SecurityConfig {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private JwtTokenValidator jwtTokenValidator;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -38,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .anyRequest().authenticated())  // Se autoriza a que todas las peticiones http sean respondidas si el usuario está autenticado.
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenValidator, BasicAuthenticationFilter.class)
                 .build();  // Construye la configuración
     }
 
