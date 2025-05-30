@@ -12,6 +12,7 @@ import org.cesde.academic.model.JwtBlacklist;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.UsuarioRepository;
 import org.cesde.academic.service.IJwtBlacklistService;
+import org.cesde.academic.service.IUsuarioService;
 import org.cesde.academic.service.impl.UserDetailsServiceImpl;
 import org.cesde.academic.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,16 @@ import java.util.Map; // Para devolver una respuesta en formato JSON sencillo
 public class AuthController {
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    JwtUtils jwtUtil;
+    private JwtUtils jwtUtil;
 
     @Autowired
-    IJwtBlacklistService jwtBlacklistService;
+    private IJwtBlacklistService jwtBlacklistService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request){
@@ -51,12 +55,21 @@ public class AuthController {
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
+            // Validar token con firma y expiración
             DecodedJWT decodedJWT = jwtUtil.validateToken(request.getRefreshToken());
+
+            // Validación adicional: ¿el refresh token está en blacklist?
+            if (jwtBlacklistService.isRefreshTokenBlacklisted(request.getRefreshToken())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Refresh token revocado o previamente utilizado");
+            }
+
             String cedula = decodedJWT.getSubject();
 
-            // Puedes añadir validaciones extra aquí: blacklist, jti, expiración manual, etc.
-
+            // Validar que el usuario aún exista y obtener sus detalles
             Authentication authentication = userDetailsService.authenticateRefreshToken(cedula);
+
+            // Generar nuevo access token
             String newAccessToken = jwtUtil.createToken(authentication);
 
             return ResponseEntity.ok(new AuthResponseDTO(cedula, "Token renovado", newAccessToken, request.getRefreshToken(), true));
@@ -67,13 +80,26 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String requestHeader){
-        if(requestHeader != null && requestHeader.startsWith("Bearer ")){
-            String token = requestHeader.substring(7);
-            DecodedJWT decodedJWT = jwtUtil.validateToken(token);
-            Date expirado = decodedJWT.getExpiresAt();
+    public ResponseEntity<?> logout(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String requestHeader,
+            @RequestBody RefreshTokenRequest refreshRequest) {
 
-            jwtBlacklistService.createBlacklistToken(token, expirado);
+        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+            String accessToken = requestHeader.substring(7);
+            DecodedJWT decodedAccessToken = jwtUtil.validateToken(accessToken);
+            String cedula = decodedAccessToken.getSubject();
+            Date accessExp = decodedAccessToken.getExpiresAt();
+
+            // Validar y decodificar refresh token recibido en el body
+            String refreshToken = refreshRequest.getRefreshToken();
+            DecodedJWT decodedRefreshToken = jwtUtil.validateToken(refreshToken);
+            Date refreshExp = decodedRefreshToken.getExpiresAt();
+
+            // Buscar usuario por cédula
+            Usuario usuario = userDetailsService.loadUsuarioByCedula(cedula);
+
+            // Guardar ambos tokens en la blacklist
+            jwtBlacklistService.createBlacklistTokens(accessToken, accessExp, refreshToken, refreshExp, usuario);
         }
 
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
