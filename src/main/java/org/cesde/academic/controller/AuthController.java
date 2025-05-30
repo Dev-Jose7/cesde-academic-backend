@@ -45,6 +45,7 @@ public class AuthController {
         return new ResponseEntity<>(userDetailsService.loginUser(request), HttpStatus.OK);
     }
 
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String requestHeader){
         if(requestHeader != null && requestHeader.startsWith("Bearer ")){
             String token = requestHeader.substring(7);
