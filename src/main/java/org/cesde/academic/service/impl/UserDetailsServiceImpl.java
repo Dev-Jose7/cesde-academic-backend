@@ -92,4 +92,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new UsernamePasswordAuthenticationToken(cedula, userDetails.getPassword(), userDetails.getAuthorities());
     }
+
+    public Authentication authenticateRefreshToken(String cedula) {
+        UserDetails userDetails = this.loadUserByUsername(cedula);
+        if (userDetails == null) {
+            throw new BadCredentialsException("Usuario no encontrado");
+        }
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails.getUsername(), null, userDetails.getAuthorities()
+        );
+    }
 }
