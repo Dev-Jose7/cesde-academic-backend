@@ -16,7 +16,7 @@ public class JwtBlacklist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 1000, nullable = false, unique = true)
+    @Column(length = 512, nullable = false, unique = true)
     private String token;
 
     @Column(name = "expiracion", nullable = false)
