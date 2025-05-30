@@ -1,18 +1,35 @@
 package org.cesde.academic.repository;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.cesde.academic.model.JwtBlacklist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface JwtBlacklistRepository extends JpaRepository<JwtBlacklist, Integer> {
-    boolean existsByToken(String token);
 
-    @Modifying // Le dice a Spring que esta no es una consulta de selección (SELECT), sino de modificación (DELETE, UPDATE, etc.). Es necesario incluirla cuando se usa la anotación QUERY al modificar
-    @Transactional // Asegura que la operación de borrado ocurra dentro de una transacción. Si algo sale mal, la transacción se revierte (rollback).
-    @Query("DELETE FROM JwtBlacklist jb WHERE jb.expiracion <= CURRENT_TIMESTAMP") // Especifica una consulta JPQL (Java Persistence Query Language) personalizada.
-    void deleteExpiredTokens();
+    // Verifica si un access token está en la blacklist
+    boolean existsByAccessToken(String accessToken);
+
+    // Verifica si un refresh token está en la blacklist
+    boolean existsByRefreshToken(String refreshToken);
+
+    // Consulta los registros por nombre de usuario
+    List<JwtBlacklist> findByUsuarioCedula(String cedula);
+
+    // Elimina access tokens expirados
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM JwtBlacklist jb WHERE jb.accessExpiracion <= CURRENT_TIMESTAMP")
+    void deleteExpiredAccessTokens();
+
+    // Elimina refresh tokens expirados
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM JwtBlacklist jb WHERE jb.refreshExpiracion <= CURRENT_TIMESTAMP")
+    void deleteExpiredRefreshTokens();
 }
