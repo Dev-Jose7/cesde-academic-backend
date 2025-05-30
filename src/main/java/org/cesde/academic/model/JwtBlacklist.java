@@ -17,8 +17,9 @@ public class JwtBlacklist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "cedula", nullable = false)
-    private String cedula;
+    @ManyToOne(targetEntity = Usuario.class)
+    @JoinColumn(name = "usuario", nullable = false)
+    private Usuario usuario; // Asegúrate de que la clase Usuario tenga una relación bidireccional si necesitas acceder desde el lado del usuario, aunque no es obligatorio.
 
     @Column(name = "access_token", length = 512, nullable = false, unique = true)
     private String accessToken;
@@ -32,12 +33,12 @@ public class JwtBlacklist {
     @Column(name = "refresh_expiracion", nullable = false)
     private Date refreshExpiracion;
 
-    public String getCedula() {
-        return cedula;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Integer getId() {
@@ -84,7 +85,7 @@ public class JwtBlacklist {
     public String toString() {
         return "JwtBlacklist{" +
                 "id=" + id +
-                ", cedula='" + cedula + '\'' +
+                ", usuario='" + usuario + '\'' +
                 ", accessToken='" + accessToken + '\'' +
                 ", accessExpiracion=" + accessExpiracion +
                 ", refreshToken='" + refreshToken + '\'' +
