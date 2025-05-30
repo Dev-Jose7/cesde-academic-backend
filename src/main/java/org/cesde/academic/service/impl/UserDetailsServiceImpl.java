@@ -78,8 +78,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken =  jwtUtils.createToken(authentication);
+        String refreshToken = jwtUtils.createRefreshToken(request.getCedula());
 
-        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, true);
+        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, refreshToken, true);
     }
 
     public Authentication authenticate(String cedula, String contrasena){

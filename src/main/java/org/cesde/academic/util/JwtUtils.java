@@ -25,6 +25,9 @@ public class JwtUtils {
     @Value("${security.jwt.user.generator}")
     private String userGenerator;
 
+    @Value("${security.jwt.expiration}")
+    private String expiration;
+
     public String createToken(Authentication authentication){
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
@@ -45,6 +48,17 @@ public class JwtUtils {
                 .sign(algorithm);
 
         return jwtToken;
+    }
+    public String createRefreshToken(String username) {
+        Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
+
+        return JWT.create()
+                .withIssuer(this.userGenerator)
+                .withSubject(username)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 604800000L)) // 7 días
+                .withJWTId(UUID.randomUUID().toString())
+                .sign(algorithm);
     }
 
     public DecodedJWT validateToken(String token){
