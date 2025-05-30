@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,8 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String cedula) throws UsernameNotFoundException {
         // Buscar al usuario en la base de datos por cedula
-        Usuario usuario = usuarioRepository.findByCedula(cedula)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario con cedula " + cedula + " no encontrado"));
+        Usuario usuario = loadUsuarioByCedula(cedula);
 
         // Convertir los roles y permisos del usuario en una lista de autoridades
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
@@ -70,6 +68,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 usuario.getAccountNoLocked(),
                 authorities
         );
+    }
+
+    public Usuario loadUsuarioByCedula(String cedula){
+        return usuarioRepository.findByCedula(cedula)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario con cedula " + cedula + " no encontrado"));
     }
 
     public AuthResponseDTO loginUser(AuthRequestDTO request){
