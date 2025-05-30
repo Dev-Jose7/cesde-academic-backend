@@ -1,5 +1,6 @@
 package org.cesde.academic.config.filter;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,28 +39,42 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(jwtToken != null && jwtToken.startsWith("Bearer")){
-            jwtToken = jwtToken.substring(7); // Ignora al string Bearer y tomar solo el token
+        // Verifica que el encabezado Authorization exista y tenga el formato correcto
+        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+            jwtToken = jwtToken.substring(7); // Elimina el prefijo "Bearer "
 
-            if (blacklistService.isTokenBlacklisted(jwtToken)) { // Valida si el token no se encuentra en lista negra por cierre de sesión
+            try {
+                // Verifica si el token está en la lista negra
+                if (blacklistService.isTokenBlacklisted(jwtToken)) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Token inválido (blacklisted)");
+                    return;
+                }
+
+                // Valida y decodifica el JWT
+                DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+                String username = jwtUtils.extractUsername(decodedJWT);
+                String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
+
+                Collection<? extends GrantedAuthority> authorities =
+                        AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+
+                // Crea el objeto Authentication y lo guarda en el contexto de seguridad
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authentication);
+                SecurityContextHolder.setContext(context);
+
+            } catch (JWTVerificationException ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token inválido (blacklisted)");
+                response.getWriter().write("Token inválido: " + ex.getMessage());
                 return;
             }
-
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-
-            String username = jwtUtils.extractUsername(decodedJWT);
-            String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
-
-            Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
-
-            SecurityContext context = SecurityContextHolder.getContext();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
         }
 
+        // Continúa con el resto de filtros
         filterChain.doFilter(request, response);
     }
 }
