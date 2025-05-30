@@ -17,7 +17,7 @@ public class JwtBlacklistServiceImpl implements IJwtBlacklistService {
     private JwtBlacklistRepository jwtBlacklistRepository;
 
     @Override
-    public void blacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario) {
+    public void createBlacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario) {
         JwtBlacklist jwtBlacklist = new JwtBlacklist();
         jwtBlacklist.setAccessToken(accessToken);
         jwtBlacklist.setAccessExpiracion(accessExp);
