@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JwtBlackListRepository extends JpaRepository<JwtBlacklist, Integer> {
+public interface JwtBlacklistRepository extends JpaRepository<JwtBlacklist, Integer> {
     boolean existsByToken(String token);
 
     @Modifying // Le dice a Spring que esta no es una consulta de selección (SELECT), sino de modificación (DELETE, UPDATE, etc.). Es necesario incluirla cuando se usa la anotación QUERY al modificar
