@@ -1,16 +1,15 @@
 package org.cesde.academic.service;
 
+import org.cesde.academic.enums.TipoToken;
 import org.cesde.academic.model.Usuario;
 
 import java.util.Date;
 
 public interface IJwtBlacklistService {
 
-    void createBlacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario);
+    void blacklistToken(String token, TipoToken tipo, Date expiration, Usuario usuario);
 
-    boolean isAccessTokenBlacklisted(String accessToken);
+    boolean isTokenBlacklisted(String token, TipoToken tipo);
 
-    boolean isRefreshTokenBlacklisted(String refreshToken);
-
-    void deleteExpiredTokens(); // Elimina access y refresh expirados
+    void deleteExpiredTokens();
 }

@@ -7,6 +7,7 @@ import org.cesde.academic.dto.request.AuthRequestDTO;
 import org.cesde.academic.dto.request.RefreshTokenRequest;
 import org.cesde.academic.dto.response.AuthResponseDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
+import org.cesde.academic.enums.TipoToken;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
 import org.cesde.academic.model.JwtBlacklist;
 import org.cesde.academic.model.Usuario;
@@ -44,35 +45,46 @@ public class AuthController {
     @Autowired
     private IJwtBlacklistService jwtBlacklistService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request){
         return new ResponseEntity<>(userDetailsService.loginUser(request), HttpStatus.OK);
     }
 
-    @PostMapping("/auth/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            // Validar token con firma y expiración
+            // 1. Validar el token con firma y expiración
             DecodedJWT decodedJWT = jwtUtil.validateToken(request.getRefreshToken());
 
-            // Validación adicional: ¿el refresh token está en blacklist?
-            if (jwtBlacklistService.isRefreshTokenBlacklisted(request.getRefreshToken())) {
+            // 2. Revisar si el token está en la blacklist
+            if (jwtBlacklistService.isTokenBlacklisted(request.getRefreshToken(), TipoToken.REFRESH)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Refresh token revocado o previamente utilizado");
             }
 
+            // 3. Extraer datos del token
             String cedula = decodedJWT.getSubject();
+            Date refreshExp = decodedJWT.getExpiresAt();
 
-            // Validar que el usuario aún exista y obtener sus detalles
+            // 4. Revocar el refresh token usado
+            Usuario usuario = userDetailsService.loadUsuarioByCedula(cedula);
+            jwtBlacklistService.blacklistToken(request.getRefreshToken(), TipoToken.REFRESH, refreshExp, usuario);
+
+            // 5. Autenticar nuevamente al usuario para renovar sus datos (roles/permisos)
             Authentication authentication = userDetailsService.authenticateRefreshToken(cedula);
 
-            // Generar nuevo access token
+            // 6. Emitir nuevos tokens
             String newAccessToken = jwtUtil.createToken(authentication);
+            String newRefreshToken = jwtUtil.createRefreshToken(cedula);
 
-            return ResponseEntity.ok(new AuthResponseDTO(cedula, "Token renovado", newAccessToken, request.getRefreshToken(), true));
+            // 7. Responder con los nuevos tokens
+            return ResponseEntity.ok(new AuthResponseDTO(
+                    cedula,
+                    "Token renovado correctamente",
+                    newAccessToken,
+                    newRefreshToken,
+                    true
+            ));
 
         } catch (JWTVerificationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token inválido o expirado");
@@ -82,7 +94,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String requestHeader,
-            @RequestBody RefreshTokenRequest refreshRequest) {
+            @Valid @RequestBody RefreshTokenRequest refreshRequest) {
 
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
             String accessToken = requestHeader.substring(7);
@@ -99,7 +111,8 @@ public class AuthController {
             Usuario usuario = userDetailsService.loadUsuarioByCedula(cedula);
 
             // Guardar ambos tokens en la blacklist
-            jwtBlacklistService.createBlacklistTokens(accessToken, accessExp, refreshToken, refreshExp, usuario);
+            jwtBlacklistService.blacklistToken(accessToken, TipoToken.ACCESS, accessExp, usuario);
+            jwtBlacklistService.blacklistToken(refreshToken, TipoToken.REFRESH, refreshExp, usuario);
         }
 
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
