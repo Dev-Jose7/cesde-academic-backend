@@ -52,16 +52,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getNombre())); // Asumiendo que el role tiene un nombre
         }
 
-        System.out.println("Roles:" + authorities);
-
         // Agregar los permisos de cada rol como autoridades
         for (Role role : usuario.getRoles()) {
             for (Permission permission : role.getPermisos()) {
                 authorities.add(new SimpleGrantedAuthority(permission.getNombre()));
             }
         }
-
-        System.out.println("Permisos:" + authorities);
 
         // Crear el objeto UserDetails con los datos del usuario
         return new org.springframework.security.core.userdetails.User(
@@ -80,10 +76,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario con cedula " + cedula + " no encontrado"));
     }
 
-    public UsuarioResponseDTO createUsuarioDTO(String cedula){
-        return usuarioService.getUsuarioByCedula(cedula).get(0);
-    }
-
     public AuthResponseDTO loginUser(AuthRequestDTO request){
 
         Authentication authentication = this.authenticateToAccessToken(request.getCedula(), request.getContrasena());
@@ -92,7 +84,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String accessToken =  jwtUtils.createAccessToken(authentication); // Se crean access token con una autenticación de tipo token (cédula, contraseña y autoridades)
         String refreshToken = jwtUtils.createRefreshToken(request.getCedula()); // Se crea refresh token solo con la cédula (sin contraseña ni autoridades: roles y permisos)
 
-        UsuarioResponseDTO usuario = createUsuarioDTO(request.getCedula()); // Se obtiene datos del usuario para cargarlos en la respuesta
+        UsuarioResponseDTO usuario = usuarioService.getUsuarioByCedula(request.getCedula()).getFirst(); // Se obtiene datos del usuario para cargarlos en la respuesta
 
         return new AuthResponseDTO(usuario, "Usuario logueado correctamente", accessToken, refreshToken, true);
     }
