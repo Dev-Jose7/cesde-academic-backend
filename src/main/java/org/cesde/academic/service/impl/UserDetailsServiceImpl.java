@@ -81,7 +81,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UsuarioResponseDTO createUsuarioDTO(String cedula){
-        return usuarioService.getUsuarioByCedula(cedula).getFirst();
+        return usuarioService.getUsuarioByCedula(cedula).get(0);
     }
 
     public AuthResponseDTO loginUser(AuthRequestDTO request){
