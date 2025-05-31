@@ -28,7 +28,7 @@ public class JwtUtils {
     @Value("${security.jwt.expiration}")
     private Integer expiration;
 
-    public String createToken(Authentication authentication){
+    public String createAccessToken(Authentication authentication){
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
         String username = authentication.getPrincipal().toString();
