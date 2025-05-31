@@ -2,10 +2,12 @@ package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.AuthRequestDTO;
 import org.cesde.academic.dto.response.AuthResponseDTO;
+import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.model.Permission;
 import org.cesde.academic.model.Role;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.UsuarioRepository;
+import org.cesde.academic.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +35,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private IUsuarioService usuarioService;
 
     @Override
     public UserDetails loadUserByUsername(String cedula) throws UsernameNotFoundException {
@@ -75,18 +80,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario con cedula " + cedula + " no encontrado"));
     }
 
-    public AuthResponseDTO loginUser(AuthRequestDTO request){
-
-        Authentication authentication = this.authenticate(request.getCedula(), request.getContrasena());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String accessToken =  jwtUtils.createToken(authentication); // Se crean access token con una autenticación de tipo token (cédula, contraseña y autoridades)
-        String refreshToken = jwtUtils.createRefreshToken(request.getCedula()); // Se crea refresh token solo con la cédula (sin contraseña ni autoridades: roles y permisos)
-
-        return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, refreshToken, true);
+    public UsuarioResponseDTO createUsuarioDTO(String cedula){
+        return usuarioService.getUsuarioByCedula(cedula).get(0);
     }
 
-    public Authentication authenticate(String cedula, String contrasena){
+    public AuthResponseDTO loginUser(AuthRequestDTO request){
+
+        Authentication authentication = this.authenticateToAccessToken(request.getCedula(), request.getContrasena());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String accessToken =  jwtUtils.createAccessToken(authentication); // Se crean access token con una autenticación de tipo token (cédula, contraseña y autoridades)
+        String refreshToken = jwtUtils.createRefreshToken(request.getCedula()); // Se crea refresh token solo con la cédula (sin contraseña ni autoridades: roles y permisos)
+
+        UsuarioResponseDTO usuario = createUsuarioDTO(request.getCedula()); // Se obtiene datos del usuario para cargarlos en la respuesta
+
+        return new AuthResponseDTO(usuario, "Usuario logueado correctamente", accessToken, refreshToken, true);
+    }
+
+    public Authentication authenticateToAccessToken(String cedula, String contrasena){
         UserDetails userDetails = this.loadUserByUsername(cedula);
 
         if (userDetails == null){
@@ -97,10 +108,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new BadCredentialsException("Credenciales invalidas");
         }
 
-        return new UsernamePasswordAuthenticationToken(cedula, userDetails.getPassword(), userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+                userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()
+        );
     }
 
-    public Authentication authenticateRefreshToken(String cedula) {
+    public Authentication authenticateToRefreshToken(String cedula) {
         UserDetails userDetails = this.loadUserByUsername(cedula);
         if (userDetails == null) {
             throw new BadCredentialsException("Usuario no encontrado");

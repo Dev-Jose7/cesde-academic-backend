@@ -71,15 +71,15 @@ public class AuthController {
             jwtBlacklistService.blacklistToken(request.getRefreshToken(), TipoToken.REFRESH, refreshExp, usuario);
 
             // 5. Autenticar nuevamente al usuario para renovar sus datos (roles/permisos)
-            Authentication authentication = userDetailsService.authenticateRefreshToken(cedula);
+            Authentication authentication = userDetailsService.authenticateToRefreshToken(cedula);
 
             // 6. Emitir nuevos tokens
-            String newAccessToken = jwtUtil.createToken(authentication);
+            String newAccessToken = jwtUtil.createAccessToken(authentication);
             String newRefreshToken = jwtUtil.createRefreshToken(cedula);
 
             // 7. Responder con los nuevos tokens
             return ResponseEntity.ok(new AuthResponseDTO(
-                    cedula,
+                    userDetailsService.createUsuarioDTO(cedula),
                     "Token renovado correctamente",
                     newAccessToken,
                     newRefreshToken,
