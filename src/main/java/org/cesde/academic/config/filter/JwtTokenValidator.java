@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import org.cesde.academic.enums.TipoToken;
 import org.cesde.academic.service.IJwtBlacklistService;
 import org.cesde.academic.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             try {
                 // Verifica si el token está en la lista negra
-                if (blacklistService.isTokenBlacklisted(jwtToken)) {
+                if (blacklistService.isTokenBlacklisted(jwtToken, TipoToken.ACCESS)) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Token inválido (blacklisted)");
                     return;
