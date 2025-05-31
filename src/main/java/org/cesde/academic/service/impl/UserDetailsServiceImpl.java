@@ -76,8 +76,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Authentication authentication = this.authenticate(request.getCedula(), request.getContrasena());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken =  jwtUtils.createToken(authentication);
-        String refreshToken = jwtUtils.createRefreshToken(request.getCedula());
+        String accessToken =  jwtUtils.createToken(authentication); // Se crean access token con una autenticación de tipo token (cédula, contraseña y autoridades)
+        String refreshToken = jwtUtils.createRefreshToken(request.getCedula()); // Se crea refresh token solo con la cédula (sin contraseña ni autoridades: roles y permisos)
 
         return new AuthResponseDTO(request.getCedula(), "Usuario logueado correctamente", accessToken, refreshToken, true);
     }
