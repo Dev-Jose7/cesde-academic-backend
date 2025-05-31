@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class AuthResponseDTO {
-    private String cedula;
+    private UsuarioResponseDTO usuario;
     private String mensaje;
     private String accessToken;
     private String refreshToken;
