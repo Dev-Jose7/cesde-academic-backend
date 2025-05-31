@@ -26,7 +26,7 @@ public class JwtUtils {
     private String userGenerator;
 
     @Value("${security.jwt.expiration}")
-    private String expiration;
+    private Integer expiration;
 
     public String createToken(Authentication authentication){
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
