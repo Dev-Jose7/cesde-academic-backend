@@ -1,12 +1,12 @@
 package org.cesde.academic.service.impl;
 
 import org.cesde.academic.model.JwtBlacklist;
+import org.cesde.academic.enums.TipoToken;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.JwtBlacklistRepository;
 import org.cesde.academic.service.IJwtBlacklistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -14,33 +14,25 @@ import java.util.Date;
 public class JwtBlacklistServiceImpl implements IJwtBlacklistService {
 
     @Autowired
-    private JwtBlacklistRepository jwtBlacklistRepository;
+    private JwtBlacklistRepository repository;
 
     @Override
-    public void createBlacklistTokens(String accessToken, Date accessExp, String refreshToken, Date refreshExp, Usuario usuario) {
-        JwtBlacklist jwtBlacklist = new JwtBlacklist();
-        jwtBlacklist.setAccessToken(accessToken);
-        jwtBlacklist.setAccessExpiracion(accessExp);
-        jwtBlacklist.setRefreshToken(refreshToken);
-        jwtBlacklist.setRefreshExpiracion(refreshExp);
-        jwtBlacklist.setUsuario(usuario);
-        jwtBlacklistRepository.save(jwtBlacklist);
+    public void blacklistToken(String token, TipoToken tipo, Date expiration, Usuario usuario) {
+        JwtBlacklist jwt = new JwtBlacklist();
+        jwt.setToken(token);
+        jwt.setExpiracion(expiration);
+        jwt.setTipo(tipo);
+        jwt.setUsuario(usuario);
+        repository.save(jwt);
     }
 
     @Override
-    public boolean isAccessTokenBlacklisted(String accessToken) {
-        return jwtBlacklistRepository.existsByAccessToken(accessToken);
+    public boolean isTokenBlacklisted(String token, TipoToken tipo) {
+        return repository.existsByTokenAndTipo(token, tipo);
     }
 
     @Override
-    public boolean isRefreshTokenBlacklisted(String refreshToken) {
-        return jwtBlacklistRepository.existsByRefreshToken(refreshToken);
-    }
-
-    @Override
-    @Transactional
     public void deleteExpiredTokens() {
-        jwtBlacklistRepository.deleteExpiredAccessTokens();
-        jwtBlacklistRepository.deleteExpiredRefreshTokens();
+        repository.deleteExpiredTokens();
     }
 }
