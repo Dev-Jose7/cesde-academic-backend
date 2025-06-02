@@ -52,7 +52,7 @@ public class ActividadController {
                 : new ResponseEntity<>(actividades, HttpStatus.OK);
     }
 
-    @GetMapping("/clase/buscar/titulo/{titulo}")
+    @GetMapping("/buscar/titulo/{titulo}")
     @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ActividadResponseDTO>> getActividadesByTitulo(@PathVariable String titulo){
         List<ActividadResponseDTO> actividades = actividadService.getActividadesByTitulo(titulo);
@@ -61,7 +61,7 @@ public class ActividadController {
                 : new ResponseEntity<>(actividades, HttpStatus.OK);
     }
 
-    @GetMapping("/clase/buscar/tipo/{tipo}")
+    @GetMapping("/buscar/tipo/{tipo}")
     @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ActividadResponseDTO>> getActividadesByTipo(@PathVariable TipoActividad tipo){
         List<ActividadResponseDTO> actividades = actividadService.getActividadesByTipo(tipo);
