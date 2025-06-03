@@ -1,6 +1,7 @@
 package org.cesde.academic.controller; // Define el paquete donde está ubicada esta clase
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.validation.Valid;
 import org.cesde.academic.dto.request.AuthRequestDTO;
@@ -8,7 +9,9 @@ import org.cesde.academic.dto.request.RefreshTokenRequest;
 import org.cesde.academic.dto.response.AuthResponseDTO;
 import org.cesde.academic.dto.response.UsuarioResponseDTO;
 import org.cesde.academic.enums.TipoToken;
+import org.cesde.academic.enums.TipoUsuario;
 import org.cesde.academic.exception.RecursoNoEncontradoException;
+import org.cesde.academic.exception.TipoIncorrectoException;
 import org.cesde.academic.model.JwtBlacklist;
 import org.cesde.academic.model.Usuario;
 import org.cesde.academic.repository.UsuarioRepository;
@@ -28,9 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*; // Anotaciones para controladores REST
 
 import java.time.LocalDateTime;
-import java.util.Base64; // Para codificar las credenciales en Base64
-import java.util.Date;
-import java.util.Map; // Para devolver una respuesta en formato JSON sencillo
+import java.util.*;
 
 @RestController // Indica que esta clase es un controlador REST que devuelve datos (no vistas HTML)
 @RequestMapping("/auth") // Prefijo común para todas las rutas de este controlador
@@ -90,6 +91,33 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token inválido o expirado");
         }
     }
+
+    @GetMapping("/validate/{tipo}")
+    public ResponseEntity<?> validateToken(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String request,
+            @PathVariable("tipo") String tipo) {
+
+        if (!request.startsWith("Bearer ")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        try {
+            TipoUsuario.valueOf(tipo.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw  new TipoIncorrectoException("Tipo de usuario inválido");
+        }
+
+        String token = request.substring(7);
+        DecodedJWT decodedJWT = jwtUtil.validateToken(token);
+
+        List<String> authorities = jwtUtil.getSpecificClaim(decodedJWT, "authorities").asList(String.class);
+        boolean estado = authorities.contains("ROLE_" + TipoUsuario.valueOf(tipo.toUpperCase()));
+
+        return estado
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
