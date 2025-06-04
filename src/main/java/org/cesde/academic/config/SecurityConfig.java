@@ -46,7 +46,6 @@ public class SecurityConfig {
                 .build();  // Construye la configuración
     }
 
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception { // Configuración del segundo componente de Spring Security Authentication Mnager
         // Es el núcleo del proceso de autenticación normalmente se delega a uno o más AuthenticationProvider
