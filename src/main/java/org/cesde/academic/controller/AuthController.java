@@ -86,6 +86,8 @@ public class AuthController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String request,
             @PathVariable("tipo") String tipo) {
 
+        System.out.println(request);
+
         if (!request.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
