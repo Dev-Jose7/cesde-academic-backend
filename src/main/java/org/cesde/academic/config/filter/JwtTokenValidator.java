@@ -15,14 +15,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 @Component
 public class JwtTokenValidator extends OncePerRequestFilter {
@@ -55,10 +56,9 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 // Valida y decodifica el JWT
                 DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
                 String username = jwtUtils.extractUsername(decodedJWT);
-                String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
-
+                List<String> authorityList = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asList(String.class);
                 Collection<? extends GrantedAuthority> authorities =
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+                        authorityList.stream().map(SimpleGrantedAuthority::new).toList();
 
                 // Crea el objeto Authentication y lo guarda en el contexto de seguridad
                 Authentication authentication =
