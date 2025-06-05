@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,10 +33,10 @@ public class JwtUtils {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
         String username = authentication.getPrincipal().toString();
-        String authorities = authentication.getAuthorities()
+        List<String> authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toList());
 
         String jwtToken = JWT.create()
                 .withIssuer(this.userGenerator)
@@ -49,6 +50,7 @@ public class JwtUtils {
 
         return jwtToken;
     }
+
     public String createRefreshToken(String username) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
