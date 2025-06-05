@@ -86,7 +86,7 @@ public class AuthController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String request,
             @PathVariable("tipo") String tipo) {
 
-        System.out.println("Token" + request);
+        System.out.println("Token " + request);
 
         if (!request.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -104,6 +104,7 @@ public class AuthController {
         System.out.println("Token validado");
 
         List<String> authorities = jwtUtil.getSpecificClaim(decodedJWT, "authorities").asList(String.class);
+        System.out.println(authorities);
         boolean estado = authorities.contains("ROLE_" + TipoUsuario.valueOf(tipo.toUpperCase()));
         System.out.println("Role validato" + estado);
 
