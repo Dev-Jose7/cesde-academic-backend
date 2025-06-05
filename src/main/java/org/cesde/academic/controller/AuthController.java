@@ -96,7 +96,7 @@ public class AuthController {
             TipoUsuario.valueOf(tipo.toUpperCase());
             System.out.println("Tipo usuario validado");
         } catch (IllegalArgumentException e) {
-            throw  new TipoIncorrectoException("Tipo de usuario inválido");
+            throw new TipoIncorrectoException("Tipo de usuario inválido");
         }
 
         String token = request.substring(7);
