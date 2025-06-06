@@ -16,6 +16,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")  // Aplica a todas las rutas del backend
                         .allowedOrigins(
+                                "http://localhost:5173",
                                 "https://cesde-academic.netlify.app",
                                 "https://cesde-academic-analytics-production.up.railway.app"
                         )
