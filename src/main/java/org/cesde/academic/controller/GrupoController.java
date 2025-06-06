@@ -62,7 +62,7 @@ public class GrupoController {
     }
 
     @GetMapping("/buscar/codigo/{codigo}")
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<GrupoResponseDTO>> getGruposByCodigo(@PathVariable("codigo") String codigo) {
         List<GrupoResponseDTO> grupos = grupoService.getGruposByCodigo(codigo);
         return grupos.isEmpty()
