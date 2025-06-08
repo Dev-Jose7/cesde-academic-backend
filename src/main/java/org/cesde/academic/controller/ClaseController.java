@@ -43,7 +43,7 @@ public class ClaseController {
     }
 
     @GetMapping("/grupo/{grupoId}")
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_ESTUDIANTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ClaseResponseDTO>> getClasesByGrupo(@PathVariable Integer grupoId) {
         List<ClaseResponseDTO> clases = claseService.getClasesByGrupo(grupoId);
         return clases.isEmpty()
