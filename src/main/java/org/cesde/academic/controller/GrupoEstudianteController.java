@@ -61,7 +61,7 @@ public class GrupoEstudianteController {
 
     // Obtener todos los grupos de un estudiante
     @GetMapping("/estudiante/{estudianteId}")
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_ESTUDIANTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<GrupoEstudianteResponseDTO>> getGrupoEstudiantesByEstudianteId(@PathVariable Integer estudianteId) {
         List<GrupoEstudianteResponseDTO> lista = grupoEstudianteService.getGrupoEstudiantesByEstudianteId(estudianteId);
 
