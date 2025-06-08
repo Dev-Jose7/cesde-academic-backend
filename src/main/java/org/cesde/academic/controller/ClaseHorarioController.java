@@ -50,7 +50,7 @@ public class ClaseHorarioController {
 
     // Obtener todos los horarios de una clase
     @GetMapping("/clase/{claseId}")
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_ESTUDIANTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DOCENTE') or hasRole('ROLE_ESTUDIANTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ClaseHorarioResponseDTO>> getClaseHorariosByClaseId(@PathVariable Integer claseId) {
         List<ClaseHorarioResponseDTO> lista = claseHorarioService.getClaseHorariosByClaseId(claseId);
 
