@@ -44,7 +44,7 @@ public class ActividadController {
     }
 
     @GetMapping("/clase/{id}")
-    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_ESTUDIANTE') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ActividadResponseDTO>> getActividadesByClase(@PathVariable Integer id) {
         List<ActividadResponseDTO> actividades = actividadService.getActividadesByClase(id);
         return actividades.isEmpty()
