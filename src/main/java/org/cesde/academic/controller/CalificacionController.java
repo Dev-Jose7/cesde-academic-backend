@@ -68,7 +68,7 @@ public class CalificacionController {
     }
 
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteCalificacion(@PathVariable Integer id) {
         calificacionService.deleteCalificacion(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
