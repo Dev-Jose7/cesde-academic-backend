@@ -79,7 +79,7 @@ public class AnuncioController {
     }
 
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteAnuncio(@PathVariable Integer id) {
         anuncioService.deleteAnuncio(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
