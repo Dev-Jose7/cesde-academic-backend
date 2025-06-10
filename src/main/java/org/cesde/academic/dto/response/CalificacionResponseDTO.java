@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class CalificacionResponseDTO {
 
     private final Integer id;
-    private final ActividadResponseDTO actividad;
+    private final ActividadResponseInfoDTO actividad;
     private final String estudiante;
     private final LocalDate fecha;
     private final BigDecimal nota;
