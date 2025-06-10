@@ -1,6 +1,7 @@
 package org.cesde.academic.service.impl;
 
 import org.cesde.academic.dto.request.CalificacionRequestDTO;
+import org.cesde.academic.dto.response.ActividadResponseInfoDTO;
 import org.cesde.academic.dto.response.CalificacionResponseDTO;
 import org.cesde.academic.dto.response.ClaseResponseInfoDTO;
 import org.cesde.academic.enums.TipoUsuario;
@@ -125,7 +126,7 @@ public class CalificacionServiceImpl implements ICalificacionService {
     private CalificacionResponseDTO createResponse(Calificacion calificacion) {
         return new CalificacionResponseDTO(
                 calificacion.getId(),
-                calificacion.getActividad().getTipo(),
+                createActividadInfo(calificacion.getActividad()),
                 calificacion.getEstudiante().getNombre(),
                 calificacion.getFecha(),
                 calificacion.getNota(),
@@ -140,5 +141,13 @@ public class CalificacionServiceImpl implements ICalificacionService {
             list.add(createResponse(c));
         }
         return list;
+    }
+
+    private ActividadResponseInfoDTO createActividadInfo(Actividad actividad){
+        return new ActividadResponseInfoDTO(
+          actividad.getId(),
+          actividad.getTitulo(),
+          actividad.getTipo()
+        );
     }
 }
