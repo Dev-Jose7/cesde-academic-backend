@@ -20,7 +20,7 @@ public class CorsConfig {
                                 "https://cesde-academic.netlify.app",
                                 "https://cesde-academic-analytics-production.up.railway.app"
                         )
-                        .allowedMethods("GET", "POST", "PUT")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
