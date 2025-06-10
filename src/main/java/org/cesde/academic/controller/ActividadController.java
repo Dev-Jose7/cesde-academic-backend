@@ -78,7 +78,7 @@ public class ActividadController {
     }
 
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteActividad(@PathVariable Integer id) {
         actividadService.deleteActividad(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
