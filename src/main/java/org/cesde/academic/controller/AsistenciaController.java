@@ -90,7 +90,7 @@ public class AsistenciaController {
     }
 
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DOCENTE') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteAsistencia(@PathVariable Integer id) {
         asistenciaService.deleteAsistencia(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
