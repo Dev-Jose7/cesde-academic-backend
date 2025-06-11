@@ -71,7 +71,7 @@ public class ModuloController {
 
     // Eliminar módulo
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deleteModulo(@PathVariable Integer id) {
         moduloService.deleteModulo(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
