@@ -83,7 +83,7 @@ public class ProgramaController {
 
     // Endpoint para eliminar un programa
     @DeleteMapping("/remover/{id}")
-    @PreAuthorize("hasRole('ROLE_DEV') and hasAuthority('DELETE')")
+    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_DEV') and hasAuthority('DELETE')")
     public ResponseEntity<Void> deletePrograma(@PathVariable Integer id){
         programaService.deletePrograma(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
