@@ -27,7 +27,7 @@ public class SemestreController {
     }
 
     @GetMapping("/lista")
-    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<SemestreResponseDTO>> getListaSemestres() {
         List<SemestreResponseDTO> semestreList = semestreService.getSemestres();
 
