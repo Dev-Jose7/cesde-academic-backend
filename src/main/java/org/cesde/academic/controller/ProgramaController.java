@@ -29,7 +29,7 @@ public class ProgramaController {
 
     // Endpoint para obtener la lista de programas
     @GetMapping("/lista")
-    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
+    @PreAuthorize("hasRole('ROLE_DIRECTIVO') or hasRole('ROLE_ADMINISTRATIVO') or hasRole('ROLE_DEV') and hasAuthority('READ')")
     public ResponseEntity<List<ProgramaResponseDTO>> getListaProgramas(){
         List<ProgramaResponseDTO> programaList = programaService.getProgramas();
 
